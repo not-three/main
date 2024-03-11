@@ -24,8 +24,8 @@ jobs:
         with:
           image: main
           registry: ghcr.io
-          directory: ./src/cron/
-          dockerfile: ./src/cron/Dockerfile
+          directory: ./
+          dockerfile: ./Dockerfile
           tags: nightly
           multiPlatform: true
           platform: linux/amd64,linux/arm64
