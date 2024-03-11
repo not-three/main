@@ -26,7 +26,8 @@ jobs:
           registry: ghcr.io
           directory: ./
           dockerfile: ./Dockerfile
-          tags: nightly
+          # tags: nightly,${{ github.sha }}
+          addLatest: true
           multiPlatform: true
           platform: linux/amd64,linux/arm64
           username: ${{ github.actor }}
