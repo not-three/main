@@ -1,0 +1,12 @@
+node_modules/
+.nuxt/
+.git/
+.output/
+.vscode/
+.github/
+dist/
+.gitignore
+db.sqlite
+docker-compose.db.yml
+docker-compose.override.yml
+docker-compose.yml

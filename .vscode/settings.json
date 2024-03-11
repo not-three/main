@@ -1,0 +1,19 @@
+{
+  "cSpell.words": [
+    "axios",
+    "lucide",
+    "Nuxt",
+    "typeorm"
+  ],
+  "css.customData": [
+    ".vscode/tailwind.json"
+  ],
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "files.insertFinalNewline": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.fixAll.stylelint": "always",
+    "editor.action.formatDocument": "always"
+  }
+}

@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:14.5
+    environment:
+      POSTGRES_PASSWORD: db
+      POSTGRES_USER: db
+      POSTGRES_DB: db
+    volumes:
+      - db:/var/lib/postgresql/data
+  
+  app:
+    image: ghcr.io/not-three/main:latest
+    depends_on:
+      - postgres
+    ports:
+      - 3000:3000
+    environment:
+      DB_HOST: postgres
+      # DB_USER: db
+      # DB_PASSWORD: db
+      # DB_NAME: db
+      # DB_PORT: 5432
+      # IP_HEADER: CF-Connecting-IP # default is X-Real-IP, can be set to 'false' to use the remote address
+      # MAX_NOTES_PER_HOUR: 200
+      # EXPIRERY: 2592000 # 30 days
+
+volumes:
+  db:

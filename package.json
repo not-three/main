@@ -1,0 +1,33 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "USE_SQLITE=true nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "db:start": "docker compose up -d -f ./docker-compose.db.yml",
+    "db:stop": "docker compose down -v -f ./docker-compose.db.yml"
+  },
+  "dependencies": {
+    "@vscode/vscode-languagedetection": "^1.0.22",
+    "axios": "^1.6.7",
+    "crypto-js": "^4.2.0",
+    "knex": "^3.1.0",
+    "monaco-editor": "^0.46.0",
+    "monaco-editor-workers": "^0.45.0",
+    "nanoid": "^5.0.6",
+    "nuxt": "^3.10.3",
+    "pg": "^8.11.3",
+    "sqlite3": "^5.1.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.11.4",
+    "@types/crypto-js": "^4.2.2",
+    "nuxt-icon": "^0.6.9"
+  }
+}
