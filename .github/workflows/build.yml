@@ -39,41 +39,22 @@ jobs:
           -c "cp -r /app/client/ /mnt/client/"
       - name: Packing files
         run: |
+          cd client && zip -r ../client.zip . && cd ..
           tar -czf client.tar.gz client
-          zip -r client.zip client
       - name: Generating hashes
         run: |
           sha256sum client.tar.gz > client.tar.gz.sha256
           sha256sum client.zip > client.zip.sha256
           md5sum client.tar.gz > client.tar.gz.md5
           md5sum client.zip > client.zip.md5
-      - name: Upload client.tar.gz
+      - name: Upload client bundle
         uses: actions/upload-artifact@v4
         with:
-          name: client.tar.gz
-          path: client.tar.gz
-      - name: Upload client.zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: client.zip
-          path: client.zip
-      - name: Upload client.tar.gz.sha256
-        uses: actions/upload-artifact@v4
-        with:
-          name: client.tar.gz.sha256
-          path: client.tar.gz.sha256
-      - name: Upload client.zip.sha256
-        uses: actions/upload-artifact@v4
-        with:
-          name: client.zip.sha256
-          path: client.zip.sha256
-      - name: Upload client.tar.gz.md5
-        uses: actions/upload-artifact@v4
-        with:
-          name: client.tar.gz.md5
-          path: client.tar.gz.md5
-      - name: Upload client.zip.md5
-        uses: actions/upload-artifact@v4
-        with:
-          name: client.zip.md5
-          path: client.zip.md5
+          name: client-bundle
+          path: |
+            client.tar.gz
+            client.zip
+            client.tar.gz.sha256
+            client.zip.sha256
+            client.tar.gz.md5
+            client.zip.md5

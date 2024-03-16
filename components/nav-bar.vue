@@ -73,10 +73,11 @@ function handle(entry: string) {
   const url = getBaseURL();
   switch (entry) {
     case 'share-curl':
-      // curl, then decrypt with aes
-      navigator.clipboard.writeText(
-        `curl -X POST ${url}raw/${route.params.id} -d '' | openssl enc -d -aes-256-cbc -a -k ${location.hash.substring(1)}`
-      )
+      navigator.clipboard.writeText([
+        `curl ${url}raw/${route.params.id}| base64 -d |`,
+        `openssl enc -aes-256-cbc -d -pass pass:${location.hash.substring(1)}`,
+        '-md md5 -salt -in /dev/stdin 2>/dev/null | cat',
+      ].join(' '))
       break
     case 'share-raw':
       navigator.clipboard.writeText(`${url}raw/${route.params.id}`)
