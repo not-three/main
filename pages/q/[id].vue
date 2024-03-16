@@ -1,12 +1,18 @@
 <template>
+  <yes-no
+    :visible="errorVisible"
+    title="Error"
+    :message="errorMessage"
+    @yes="errorVisible = false"
+    alt-yes="Ok"
+    disable-no
+  />
   <spinner :visible="loading" />
-  <controls
-    :loading="loading"
-    :enable="true"
-    :url="decryptURL"
+  <nav-bar
+    :config="configData"
+    @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
-    @new="newD"
     no-save
   />
   <editor

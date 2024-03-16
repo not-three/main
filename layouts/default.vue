@@ -8,4 +8,7 @@
 .base-container {
   @apply w-screen h-screen bg-[#1e1e1e] overflow-hidden;
 }
+button {
+  @apply select-none;
+}
 </style>

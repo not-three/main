@@ -49,7 +49,64 @@ volumes:
   db:
 ```
 
+If you plan on only using it alone or with a very small group of people, you can also use sqlite:
+
+
+```yml
+version: '3'
+
+services:
+  app:
+    image: ghcr.io/not-three/main:latest
+    depends_on:
+      - postgres
+    ports:
+      - 3000:3000
+    environment:
+      USE_SQLITE: "true"
+      SQLITE_FILENAME: /data/db.sqlite
+    volumes:
+      - db:/data
+
+volumes:
+  db:
+```
+
+The sqlite mode is not recommended but is useful for development,
+or deployments to raspberry pi's or other small devices (we do support arm64).
+
 For a more advanced deployment, see the [docker-compose.yml](./docker-compose.yml) file.
+
+## Static site deployment
+
+In some scenarios, you might want to deploy the static site without a backend,
+for example [not-th.re](https://not-th.re) is deployed with Cloudflare Pages,
+while the API is hosted on [api.not-th.re](https://api.not-th.re).
+
+The static site can then be configured by editing the `config.json` file.
+
+```json
+{ "baseURL": "https://api.not-th.re/", "terms": "https://scolasti.co/go/privacy" }
+```
+
+This is possible by getting the static fils by one of the following ways.
+
+### Docker way
+
+The docker way does ensure you get the exact same files as for the api deployment.
+
+```bash
+docker run --rm -v $(pwd):/mnt ghcr.io/not-three/main:latest sh -c "cp -r /app/client /mnt/client"
+```
+
+This will copy the client folder to your current working directory.
+If you use a specific api version, you can replace `latest` with the version you want to use.
+
+### Github Actions
+
+The latest version of the client is also available as a zip file in the releases section of this repository.
+
+[![download latest gh actions artifacts](https://img.shields.io/badge/download-latest_gh_actions_artifacts-blue)](https://nightly.link/not-three/main/workflows/build/main?preview)
 
 ## Development
 

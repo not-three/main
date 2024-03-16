@@ -1,4 +1,4 @@
-name: Build and Publish Nightly
+name: Build and Publish Docker
 
 on:
   push:
@@ -21,14 +21,59 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
       - uses: mr-smithers-excellent/docker-build-push@v6
+        id: docker_build
         with:
           image: main
           registry: ghcr.io
           directory: ./
           dockerfile: ./Dockerfile
-          # tags: nightly,${{ github.sha }}
           addLatest: true
           multiPlatform: true
           platform: linux/amd64,linux/arm64
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }} 
+      - name: Extract static files
+        run: >
+          docker run --rm -v $(pwd):/mnt
+          ${{ steps.docker_build.outputs.imageFullName }}
+          sh -c "cp -r /app/client /mnt/client"
+      - name: Packing files
+        run: |
+          tar -czf client.tar.gz client
+          zip -r client.zip client
+      - name: Generating hashes
+        run: |
+          sha256sum client.tar.gz > client.tar.gz.sha256
+          sha256sum client.zip > client.zip.sha256
+          md5sum client.tar.gz > client.tar.gz.md5
+          md5sum client.zip > client.zip.md5
+      - name: Upload client.tar.gz
+        uses: actions/upload-artifact@v4
+        with:
+          name: client.tar.gz
+          path: client.tar.gz
+      - name: Upload client.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: client.zip
+          path: client.zip
+      - name: Upload client.tar.gz.sha256
+        uses: actions/upload-artifact@v4
+        with:
+          name: client.tar.gz.sha256
+          path: client.tar.gz.sha256
+      - name: Upload client.zip.sha256
+        uses: actions/upload-artifact@v4
+        with:
+          name: client.zip.sha256
+          path: client.zip.sha256
+      - name: Upload client.tar.gz.md5
+        uses: actions/upload-artifact@v4
+        with:
+          name: client.tar.gz.md5
+          path: client.tar.gz.md5
+      - name: Upload client.zip.md5
+        uses: actions/upload-artifact@v4
+        with:
+          name: client.zip.md5
+          path: client.zip.md5

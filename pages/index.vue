@@ -1,17 +1,24 @@
 <template>
+  <yes-no
+    :visible="errorVisible"
+    title="Error"
+    :message="errorMessage"
+    @yes="errorVisible = false"
+    alt-yes="Ok"
+    disable-no
+  />
   <spinner :visible="loading" />
-  <controls
-    :loading="loading"
-    :enable="content !== ''"
+  <nav-bar
+    :config="configData"
+    @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
-    @new="newD"
   />
   <editor
     v-model="content"
+    @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
-    @new="newD"
     @loaded="loading = false"
   />
 </template>

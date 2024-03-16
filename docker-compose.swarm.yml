@@ -1,0 +1,49 @@
+# This example is for a docker swarm, with traefik as a
+# reverse proxy deployed as a global service. In theorey
+# this is what we have in production, but slightly modified.
+
+version: '3.8'
+
+services:
+  postgres:
+    image: kartoza/postgis
+    environment:
+      POSTGRES_PASSWORD: db
+      POSTGRES_USER: db
+      POSTGRES_DB: db
+      ALLOW_IP_RANGE: 0.0.0.0/0
+    volumes:
+      - <your swarm shared volume>:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+  
+  app:
+    image: ghcr.io/not-three/main
+    depends_on:
+      - postgres
+    networks:
+      - default
+      - <your traefik network>
+    environment:
+      DB_HOST: postgres
+      MAX_LENGTH: 1000000
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.not-three.rule=Host(`api.example.com`)"
+        - "traefik.http.routers.not-three.entrypoints=https"
+        - "traefik.http.routers.not-three.middlewares=not-three"
+        - "traefik.http.routers.not-three.tls.certresolver=default"
+        - "traefik.http.services.not-three.loadbalancer.server.port=3000"
+        - "traefik.http.middlewares.not-three-prefix.addprefix.prefix=/api"
+        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolallowmethods=*"
+        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolallowheaders=*"
+        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolalloworiginlist=*"
+        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolmaxage=100"
+        - "traefik.http.middlewares.not-three-cors.headers.addvaryheader=true"
+        - "traefik.http.middlewares.not-three.chain.middlewares=not-three-prefix,not-three-cors"
+
+networks:
+  <your traefik network>:
+    external: true
