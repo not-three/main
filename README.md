@@ -96,7 +96,7 @@ This is possible by getting the static fils by one of the following ways.
 The docker way does ensure you get the exact same files as for the api deployment.
 
 ```bash
-docker run --rm -v $(pwd):/mnt ghcr.io/not-three/main:latest sh -c "cp -r /app/client /mnt/client"
+docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt ghcr.io/not-three/main:latest -c "cp -r /app/client/ /mnt/client/"
 ```
 
 This will copy the client folder to your current working directory.
@@ -104,7 +104,7 @@ If you use a specific api version, you can replace `latest` with the version you
 
 ### Github Actions
 
-The latest version of the client is also available as a zip file in the releases section of this repository.
+The latest version of the client is also available as a zip file in the workflow section of this repository.
 
 [![download latest gh actions artifacts](https://img.shields.io/badge/download-latest_gh_actions_artifacts-blue)](https://nightly.link/not-three/main/workflows/build/main?preview)
 

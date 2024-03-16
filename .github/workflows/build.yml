@@ -34,9 +34,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }} 
       - name: Extract static files
         run: >
-          docker run --rm -v $(pwd):/mnt
+          docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt
           ${{ steps.docker_build.outputs.imageFullName }}
-          sh -c "cp -r /app/client /mnt/client"
+          -c "cp -r /app/client/ /mnt/client/"
       - name: Packing files
         run: |
           tar -czf client.tar.gz client
