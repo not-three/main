@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "USE_SQLITE=true nuxt dev",
-    "generate": "nuxt generate",
+    "generate": "SKIP_DB=true nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "db:start": "docker compose up -d -f ./docker-compose.db.yml",

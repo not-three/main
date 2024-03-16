@@ -7,15 +7,15 @@ export class Database {
   private db: KnexInstance;
 
   constructor() {
-    if (process.env.USE_SQLITE) {
-      this.db = knex({
+    if (process.env.SKIP_DB) this.db = null as any
+    else if (process.env.USE_SQLITE) this.db = knex({
         client: 'sqlite3',
         connection: {
           filename: process.env.SQLITE_FILENAME || 'db.sqlite',
         },
         useNullAsDefault: true
       });
-    } else this.db = knex({
+    else this.db = knex({
       client: 'pg',
       connection: {
         host: process.env.DB_HOST || '127.0.0.1',
@@ -26,7 +26,9 @@ export class Database {
       }
     });
 
-    (async () => {
+    if (process.env.SKIP_DB) return;
+    
+    setTimeout(async () => {
       const db = (this as any).db as KnexInstance;
       if (!await db.schema.hasTable('notes')) {
         await db.schema.createTable('notes', (x) => {
@@ -37,7 +39,7 @@ export class Database {
           x.string('ip').notNullable();
         });
       }
-    })();
+    }, 15_000);
     
     setInterval(async () => {
       console.log('Deleting expired notes');
