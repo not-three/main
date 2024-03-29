@@ -1,5 +1,11 @@
 # not-th.re
 
+[![License NPOSL-3.0](https://img.shields.io/badge/license-NPOSL--3.0-blue)](https://github.com/not-three/main/blob/main/LICENSE)
+[![GitHub Issues](https://img.shields.io/github/issues/not-three/main)](https://github.com/not-three/main/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/not-three/main)](https://github.com/not-three/main/pulls)
+[![Build and Publish Nightly](https://github.com/not-three/main/actions/workflows/nightly.yml/badge.svg)](https://github.com/not-three/main/actions/workflows/nightly.yml)
+[![Build and Publish Release](https://github.com/not-three/main/actions/workflows/build.yml/badge.svg)](https://github.com/not-three/main/actions/workflows/build.yml)
+
 !3 (spoken not three, derived from the leet speak word not3) is a simple
 paste sharing platform similar to other solutions like hastebin or pastebin.
 
@@ -38,6 +44,7 @@ services:
   
   app:
     image: ghcr.io/not-three/main:latest
+    # image: ghcr.io/not-three/main:nightly
     depends_on:
       - postgres
     ports:
@@ -107,6 +114,7 @@ If you use a specific api version, you can replace `latest` with the version you
 The latest version of the client is also available as a zip file in the workflow section of this repository.
 
 [![download latest gh actions artifacts](https://img.shields.io/badge/download-latest_gh_actions_artifacts-blue)](https://nightly.link/not-three/main/workflows/build/main)
+[![download nightly gh actions artifacts](https://img.shields.io/badge/download-nightly_gh_actions_artifacts-red)](https://nightly.link/not-three/main/workflows/nightly/main/client-bundle)
 
 ## Development
 
@@ -130,10 +138,10 @@ This license, a modified version of the Open Software License 3.0, mandates that
 
 ### Permissions and Limitations
 
-| Permitted Actions                                                                                                 | Prohibited Actions                                                                                                         | Required Actions                                                                                                                        |
-|-------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| <details><summary>🟢 Granting Further Permissions</summary>Allows you to provide additional permissions for the software.</details>  | <details><summary>🔴 Utilizing Trademarks</summary>Restricts the use of trademarks or logos of contributors.</details>   | <details><summary>🔵 Disclosing Source Code</summary>Requires revealing your source code when distributing the software.</details>     |
-| <details><summary>🟢 Modifications</summary>Permits altering the software and creating derivative works.</details>                | <details><summary>🔴 Incurring Liability</summary>Limits legal accountability for damages related to the software.</details> | <details><summary>🔵 Retaining Notices</summary>Requires maintaining original notices within the software.</details>                   |
-| <details><summary>🟢 Sharing</summary>Allows the distribution of the original or modified software.</details>                     | <details><summary>🔴 Commercial Use</summary>Prohibits the use of the software for commercial purposes, including sales, licensing, or distribution for profit.</details> | <details><summary>🔵 Including the Permission</summary>Requires including the text of this permission framework in modified versions of the software.</details>|
+| Permitted Actions                                                                                                                    | Prohibited Actions                                                                                                                                                        | Required Actions                                                                                                                                                |
+|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <details><summary>🟢 Granting Further Permissions</summary>Allows you to provide additional permissions for the software.</details>  | <details><summary>🔴 Utilizing Trademarks</summary>Restricts the use of trademarks or logos of contributors.</details>                                                    | <details><summary>🔵 Disclosing Source Code</summary>Requires revealing your source code when distributing the software.</details>                              |
+| <details><summary>🟢 Modifications</summary>Permits altering the software and creating derivative works.</details>                   | <details><summary>🔴 Incurring Liability</summary>Limits legal accountability for damages related to the software.</details>                                              | <details><summary>🔵 Retaining Notices</summary>Requires maintaining original notices within the software.</details>                                            |
+| <details><summary>🟢 Sharing</summary>Allows the distribution of the original or modified software.</details>                        | <details><summary>🔴 Commercial Use</summary>Prohibits the use of the software for commercial purposes, including sales, licensing, or distribution for profit.</details> | <details><summary>🔵 Including the Permission</summary>Requires including the text of this permission framework in modified versions of the software.</details> |
 
 **This information is provided for general understanding and is not legal advice.**
