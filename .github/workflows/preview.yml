@@ -1,0 +1,40 @@
+name: Deploy PR previews
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+concurrency: preview-${{ github.ref }}
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Label the PR
+        uses: actions/labeler@v4
+
+      - name: Build with Docker
+        run: docker build -t tmp .
+      
+      - name: Extract static files
+        run: >
+          docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt
+          tmp -c "cp -r /app/client/ /mnt/client/"
+        
+      - name: Updating config.json for not-th.re public
+        run: >
+          echo "{\"baseURL\": \"https://api.not-th.re/\", \"terms\":
+          \"https://scolasti.co/go/privacy\"}" > client/config.json
+
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          preview-branch: gh-pages
+          source-dir: ./client

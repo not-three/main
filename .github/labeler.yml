@@ -1,0 +1,5 @@
+ci: .github/workflows/*
+components: components/**
+server: server/**
+pages: pages/**
+public: public/**

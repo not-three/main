@@ -1,4 +1,4 @@
-name: Build and Publish Docker
+name: Build and Publish
 
 on:
   push:
@@ -14,12 +14,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
+
       - uses: mr-smithers-excellent/docker-build-push@v6
         id: docker_build
         with:
@@ -32,21 +34,25 @@ jobs:
           platform: linux/amd64,linux/arm64
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }} 
+
       - name: Extract static files
         run: >
           docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt
           ${{ steps.docker_build.outputs.imageFullName }}
           -c "cp -r /app/client/ /mnt/client/"
+
       - name: Packing files
         run: |
           cd client && zip -r ../client.zip . && cd ..
           tar -czf client.tar.gz client
+
       - name: Generating hashes
         run: |
           sha256sum client.tar.gz > client.tar.gz.sha256
           sha256sum client.zip > client.zip.sha256
           md5sum client.tar.gz > client.tar.gz.md5
           md5sum client.zip > client.zip.md5
+
       - name: Upload client bundle
         uses: actions/upload-artifact@v4
         with:
@@ -58,3 +64,17 @@ jobs:
             client.zip.sha256
             client.tar.gz.md5
             client.zip.md5
+
+      - name: Updating config.json for not-th.re public
+        run: >
+          echo "{\"baseURL\": \"https://api.not-th.re/\", \"terms\":
+          \"https://scolasti.co/go/privacy\"}" > client/config.json
+
+      - name: Upload client bundle to cloudflare
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: not-three
+          directory: client
+          wranglerVersion: '3'
