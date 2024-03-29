@@ -27,6 +27,7 @@ services:
     environment:
       DB_HOST: postgres
       MAX_LENGTH: 1000000
+      STATUS_KEY: random-password
     deploy:
       replicas: 1
       labels:

@@ -106,7 +106,7 @@ If you use a specific api version, you can replace `latest` with the version you
 
 The latest version of the client is also available as a zip file in the workflow section of this repository.
 
-[![download latest gh actions artifacts](https://img.shields.io/badge/download-latest_gh_actions_artifacts-blue)](https://nightly.link/not-three/main/workflows/build/main?preview)
+[![download latest gh actions artifacts](https://img.shields.io/badge/download-latest_gh_actions_artifacts-blue)](https://nightly.link/not-three/main/workflows/build/main)
 
 ## Development
 
