@@ -1,6 +1,8 @@
 ### Build Image
 FROM node:20-alpine as build
 
+RUN npm i -g pnpm
+
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
@@ -28,4 +30,3 @@ WORKDIR /app
 COPY --from=build /app/SERVER_OUTPUT /app
 COPY --from=build /app/CLIENT_OUTPUT /app/client
 ENTRYPOINT ["node", "server/index.mjs"]
-      
