@@ -20,7 +20,7 @@ RUN cp -rL .output/public /app/CLIENT_OUTPUT
 RUN mkdir /app/SERVER_OUTPUT/public/node_modules && \
     mkdir /app/CLIENT_OUTPUT/node_modules && \
     cp -rL node_modules/monaco-editor-workers /app/SERVER_OUTPUT/public/node_modules/monaco-editor-workers && \
-    cp -rL node_modules/monaco-editor /app/SERVER_OUTPUT/public/node_modules/monaco-editor
+    cp -rL node_modules/monaco-editor /app/SERVER_OUTPUT/public/node_modules/monaco-editor && \
     cp -rL node_modules/monaco-editor-workers /app/CLIENT_OUTPUT/node_modules/monaco-editor-workers && \
     cp -rL node_modules/monaco-editor /app/CLIENT_OUTPUT/node_modules/monaco-editor
 
