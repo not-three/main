@@ -1,5 +1,5 @@
 <template>
-  <div class="border-l-2 border-white/20" />
+  <div class="border-l-2 border-white/20 h-full content-['']" />
   <div class="relative" ref="container">
     <h2
       @click="active = disabled ? false : !active"
@@ -9,9 +9,9 @@
       <span class="font-bold">{{ name.substring(0, 1).toUpperCase() }}</span>
       <span>{{ name.substring(1) }}</span>
     </h2>
-    <div class="absolute inset-x-0 bottom-0 flex justify-center items-center pointer-events-none">
+    <div class="absolute inset-x-0 bottom-0 flex justify-start items-center pointer-events-none">
       <fade>
-        <div v-if="active" class="translate-y-full overflow-visible z-50 flex flex-col items-center pointer-events-auto">
+        <div v-if="active" class="translate-y-full overflow-visible z-50 flex flex-col items-start pointer-events-auto">
           <div class="w-0 h-0 border-x-[1rem] border-x-transparent border-b-[1rem] border-b-black mt-2" />
           <div class="bg-black p-2">
             <button
@@ -50,7 +50,7 @@ function doEmit(entry: string) {
   emit('click', entry)
 }
 
-function outsideClickListener(event: MouseEvent) {
+function outsideClickListener(event: MouseEvent | TouchEvent) {
   if (!container.value) return
   if (!container.value.contains(event.target as Node)) {
     active.value = false
@@ -59,9 +59,11 @@ function outsideClickListener(event: MouseEvent) {
 
 onMounted(() => {
   window.addEventListener('click', outsideClickListener)
+  window.addEventListener('touchstart', outsideClickListener)
 })
 
 onUnmounted(() => {
   window.removeEventListener('click', outsideClickListener)
+  window.removeEventListener('touchstart', outsideClickListener)
 })
 </script>

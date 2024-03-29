@@ -10,6 +10,7 @@
   <spinner :visible="loading" />
   <nav-bar
     :config="configData"
+    :default-expires="defaultExpires"
     @new="newD"
     @save="saveD"
     @duplicate="duplicateD"

@@ -10,6 +10,8 @@
   <spinner :visible="loading" />
   <nav-bar
     :config="configData"
+    :expires="expires"
+    :default-expires="defaultExpires"
     @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
@@ -34,19 +36,21 @@ export default defineNuxtComponent({
   data: () => ({
     isReady: false,
     decryptURL: '',
+    expires: null,
   }),
   async mounted() {
     try {
       const api = await this.getApi();
       const secret = location.hash.substring(1);
       this.decryptURL = api.defaults.baseURL + `decrypt/${this.$route.params.id}/${secret}`;
-      const res = await (await this.getApi()).get(`raw/${this.$route.params.id}`);
-      this.content = CryptoJS.AES.decrypt(res.data, secret).toString(CryptoJS.enc.Utf8);
+      const res = await api.get(`json/${this.$route.params.id}`);
+      this.content = CryptoJS.AES.decrypt(res.data.content, secret).toString(CryptoJS.enc.Utf8);
       this.isReady = true;
       this.readOnly = true;
+      this.expires = res.data.expires;
     } catch (e) {
       console.error(e);
-      window.location.href = '/';
+      this.$router.push('/');
     }
   },
 })

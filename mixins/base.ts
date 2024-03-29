@@ -10,8 +10,9 @@ export default defineNuxtComponent({
     api: null as any,
     errorVisible: false,
     errorMessage: '',
+    defaultExpires: 0,
   }),
-  mounted() {
+  async mounted() {
     const handler = (event: any) => {
       if (event.origin !== location.origin) return;
       if (event.data?.type !== 'DUPLICATE_SHARE') return;
@@ -19,7 +20,15 @@ export default defineNuxtComponent({
       window.removeEventListener('message', handler);
     }
     window.addEventListener('message', handler);
-    this.getApi()
+    const api = await this.getApi()
+    try {
+      const info = await api.get('info');
+      this.defaultExpires = info.data.defaultExpires;
+    } catch (e) {
+      console.error(e);
+      this.errorMessage = 'Error connecting to API. Please try again later.';
+      this.errorVisible = true;
+    }
   },
   methods: {
     async showError(message: string) {
@@ -32,8 +41,8 @@ export default defineNuxtComponent({
       const secret = Math.random().toString(36).substring(2);
       const encrypted = CryptoJS.AES.encrypt(this.content, secret).toString();
       const res = await (await this.getApi()).post('create', { content: encrypted });
-      window.location.href = `/q/${res.data.id}#${secret}`;
-      console.log(res.data, secret);
+      // window.location.href = `/q/${res.data.id}#${secret}`;
+      this.$router.push('/q/' + res.data.id + '#' + secret);
     },
     async duplicateD() {
       if (!this.content) return this.showError('No content to duplicate');
