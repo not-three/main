@@ -39,5 +39,6 @@ jobs:
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          preview-branch: gh-pages
+          preview-branch: html-previews
           source-dir: ./client
+          custom-url: beta.not-th.re
