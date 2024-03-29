@@ -1,33 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>404 Not Found</title>
+    <title>Loading Page...</title>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var path = window.location.pathname;
             var prMatch = path.match(/\/pr-preview\/([^\/]+)\/.*/);
 
-            function replaceContent(url) {
+            function replaceContent(url, isFallback) {
                 fetch(url)
                     .then(function(response) {
+                        if (!response.ok && !isFallback) {
+                            // If the response is not OK and it's not already a fallback attempt, try to load the main index.html
+                            replaceContent('/index.html', true);
+                            return;
+                        }
                         return response.text();
                     })
                     .then(function(html) {
-                        document.open();
-                        document.write(html);
-                        document.close();
+                        if (html) {
+                            document.open();
+                            document.write(html);
+                            document.close();
+                        }
                     })
                     .catch(function(error) {
-                        console.error('Failed to fetch the page:', error);
+                        if (!isFallback) {
+                            // If there's an error and it's not already a fallback attempt, try to load the main index.html
+                            replaceContent('/index.html', true);
+                        } else {
+                            // If it's a fallback attempt, log the error
+                            console.error('Failed to fetch the fallback page:', error);
+                        }
                     });
             }
 
             if (prMatch) {
                 // If in a PR preview path, fetch the PR-specific 404 content
-                replaceContent('/pr-preview/' + prMatch[1] + '/404.html');
+                replaceContent('/pr-preview/' + prMatch[1] + '/404.html', false);
             } else {
                 // If not in a PR preview path, fetch the main index.html content
-                replaceContent('/index.html');
+                replaceContent('/index.html', false);
             }
         });
     </script>
