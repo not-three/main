@@ -33,8 +33,13 @@
           @click="emits('no')"
           class="yes-no-button"
         >
-          <span class="font-bold underline">N</span>
-          <span>o</span>
+          <template v-if="props.altNo">
+            {{ props.altNo }}
+          </template>
+          <template v-else>
+            <span class="font-bold underline">N</span>
+            <span>o</span>
+          </template>
         </button>
       </div>
     </div>
@@ -50,6 +55,7 @@ const props = defineProps<{
   message: string;
   disableNo?: boolean;
   altYes?: string;
+  altNo?: string;
 }>();
 const emits = defineEmits(['yes', 'no'])
 watch(() => props.visible, (value) => {

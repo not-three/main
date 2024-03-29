@@ -7,6 +7,16 @@
       @yes="copyDecrypted"
       @no="visible = false"
     />
+    <yes-no
+      title="Save File"
+      message="How long should the file be stored?"
+      alt-yes="Save"
+      alt-no="Cancel"
+      @yes="copyDecrypted"
+      @no="visible = false"
+    >
+      <input type="range" min="0" max="30" step="1" />
+    </yes-no>
     <img id="logo" src="/assets/img/icon.svg" class="h-5 w-5 border-white border" alt="!3" />
     <h1 class="font-bold select-none transition-all duration-200 max-w-0 -mr-1 overflow-hidden whitespace-pre">
       not-th.re
@@ -97,6 +107,7 @@ const entries = computed(() => ([
     name: 'file',
     entries: [
       ['save', 'Save for ' + Math.floor(props.defaultExpires / 1000 / 60 / 60 / 24) + ' days'],
+      ['save-custom', 'Save for custom time'],
       ['duplicate', 'Duplicate'],
       ['new', 'New'],
     ] as [string, string][],
