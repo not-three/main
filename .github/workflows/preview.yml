@@ -21,7 +21,10 @@ jobs:
         uses: actions/labeler@v4
 
       - name: Build with Docker
-        run: docker build -t tmp .
+        run: >
+          docker build
+          --build-arg="NUXT_APP_BASE_URL=/app-ui/pr-preview/pr-${{ github.event.number }}/"
+          -t tmp .
       
       - name: Extract static files
         run: >
