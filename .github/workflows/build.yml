@@ -39,7 +39,7 @@ jobs:
         run: >
           docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt
           ${{ steps.docker_build.outputs.imageFullName }}
-          -c "cp -r /app/client/ /mnt/client/"
+          -c "cp -r /app/client/ /mnt/client/  && chmod -R 777 /mnt/client/"
 
       - name: Packing files
         run: |

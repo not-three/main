@@ -26,7 +26,7 @@ jobs:
       - name: Extract static files
         run: >
           docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt
-          tmp -c "cp -r /app/client/ /mnt/client/"
+          tmp -c "cp -r /app/client/ /mnt/client/ && chmod -R 777 /mnt/client/"
         
       - name: Updating config.json for not-th.re public
         run: >
