@@ -23,7 +23,7 @@ jobs:
       - name: Build with Docker
         run: >
           docker build
-          --build-arg="NUXT_APP_BASE_URL=/app-ui/pr-preview/pr-${{ github.event.number }}/"
+          --build-arg="NUXT_APP_BASE_URL=/pr-preview/pr-${{ github.event.number }}/"
           -t tmp .
       
       - name: Extract static files
