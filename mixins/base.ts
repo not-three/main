@@ -62,7 +62,7 @@ export default defineNuxtComponent({
     },
     async getApi(): Promise<AxiosInstance> {
       if (this.api) return this.api;
-      this.configData = (await Axios.get('/config.json')).data;
+      this.configData = (await Axios.get(this.$config.app.baseURL + 'config.json')).data;
       this.api = Axios.create({
         baseURL: this.configData.baseURL,
       })
