@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>404 Not Found</title>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var path = window.location.pathname;
+            var prMatch = path.match(/\/pr-preview\/([^\/]+)\/.*/);
+
+            if (prMatch) {
+                // If in a PR preview path, fetch the PR-specific 404 content
+                fetch('/pr-preview/' + prMatch[1] + '/404.html')
+                    .then(function(response) {
+                        return response.text();
+                    })
+                    .then(function(html) {
+                        document.body.innerHTML = html;
+                    })
+                    .catch(function(error) {
+                        console.error('Failed to fetch the PR-specific 404 page:', error);
+                    });
+            } else {
+                // If not in a PR preview path, fetch the main index.html content
+                fetch('/index.html')
+                    .then(function(response) {
+                        return response.text();
+                    })
+                    .then(function(html) {
+                        document.body.innerHTML = html;
+                    })
+                    .catch(function(error) {
+                        console.error('Failed to fetch the main index page:', error);
+                    });
+            }
+        });
+    </script>
+</head>
+<body>
+    Loading...
+</body>
+</html>
