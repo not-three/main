@@ -145,3 +145,13 @@ This license, a modified version of the Open Software License 3.0, mandates that
 | <details><summary>🟢 Sharing</summary>Allows the distribution of the original or modified software.</details>                        | <details><summary>🔴 Commercial Use</summary>Prohibits the use of the software for commercial purposes, including sales, licensing, or distribution for profit.</details> | <details><summary>🔵 Including the Permission</summary>Requires including the text of this permission framework in modified versions of the software.</details> |
 
 **This information is provided for general understanding and is not legal advice.**
+
+### Commercial Use Clarification
+
+While the core NPOSL-3.0 doesn't permit usage by for-profit entities, we're extending some extra allowances for commercial use of our software, as outlined below:
+
+- Sending Code: Totally fine to use our page for sending code or chatting between folks.
+- Your Own Instance: If you're a business, feel free to set up the software internally. Just make sure you're not making money off it directly.
+- No Go for Hosting Providers: If you're thinking of hosting the software as a service for others, that's a no-go. But, hosting it internally for your own use? All good.
+
+In a nutshell, keep the software's use within your company cool and non-profit, and you're all set.
