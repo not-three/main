@@ -25,7 +25,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v6
         id: docker_build
         with:
-          tags: latest,${{ github.sha }},${{ github.ref }}
+          tags: latest,${{ github.sha }},${{ github.ref_name }}
           image: main
           registry: ghcr.io
           directory: ./
