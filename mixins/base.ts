@@ -10,7 +10,7 @@ export default defineNuxtComponent({
     api: null as any,
     errorVisible: false,
     errorMessage: '',
-    defaultExpires: 0,
+    defaultExpires: 1,
   }),
   async mounted() {
     const handler = (event: any) => {
@@ -35,12 +35,15 @@ export default defineNuxtComponent({
       this.errorMessage = message;
       this.errorVisible = true;
     },
-    async saveD() {
+    async saveD(expires?: number) {
       if (this.readOnly) return this.showError('Cannot save readonly note');
       if (!this.content) return this.showError('No content to save');
       const secret = Math.random().toString(36).substring(2);
       const encrypted = CryptoJS.AES.encrypt(this.content, secret).toString();
-      const res = await (await this.getApi()).post('create', { content: encrypted });
+      const res = await (await this.getApi()).post('create', {
+        ...(expires ? { expires } : {}),
+        content: encrypted,
+      });
       // window.location.href = `/q/${res.data.id}#${secret}`;
       this.$router.push('/q/' + res.data.id + '#' + secret);
     },

@@ -14,6 +14,7 @@
       <p class="my-4">
         {{ props.message }}
       </p>
+      <slot />
       <div class="grid grid-cols-2 gap-2 text-black">
         <button
           @click="emits('yes')"

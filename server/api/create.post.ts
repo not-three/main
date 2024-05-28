@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid'
 export default defineEventHandler(async (event) => {
   const db = event.context.db as KnexInstance;
   const body = await readBody(event);
+  const defaultExpires = 1000 * (Number(process.env.EXPIRY) || 60 * 60 * 24 * 30);
   if (typeof body.content !== 'string') {
     setResponseStatus(event, 400);
     return {success: false, error: 'Invalid content'}
@@ -16,7 +17,21 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400);
     return {success: false, error: 'Content too short'}
   }
-  const realIP = event.node.req.connection.remoteAddress;
+  if (body.expires) {
+    if (typeof body.expires !== 'number') {
+      setResponseStatus(event, 400);
+      return {success: false, error: 'Invalid expiry'}
+    }
+    if (body.expires < 30_000) {
+      setResponseStatus(event, 400);
+      return {success: false, error: 'Expiry too short'}
+    }
+    if (body.expires > defaultExpires) {
+      setResponseStatus(event, 400);
+      return {success: false, error: 'Expiry too long'}
+    }
+  }
+  const realIP = event.node.req.socket.remoteAddress || '127.0.0.1';
   const ipEnv = process.env.IP_HEADER;
   const ip = ipEnv !== 'false' ? event.node.req.headers[ipEnv || 'x-real-ip'] || realIP : realIP;
   const last60Minutes = new Date(Date.now() - (1000 * 60 * 60));
@@ -31,7 +46,7 @@ export default defineEventHandler(async (event) => {
     id, ip,
     content: body.content,
     created_at: db.fn.now(),
-    expires_at: new Date(Date.now() + (1000 * (Number(process.env.EXPIRY) || 60 * 60 * 24 * 30))),
+    expires_at: new Date(Date.now() + (body.expires || defaultExpires)),
   });
   return {success: true, id};
 })

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "USE_SQLITE=true nuxt dev",
+    "dev": "IP_HEADER=false USE_SQLITE=true nuxt dev",
     "generate": "SKIP_DB=true nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
