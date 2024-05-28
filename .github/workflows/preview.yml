@@ -34,7 +34,8 @@ jobs:
       - name: Updating config.json for not-th.re public
         run: >
           echo "{\"baseURL\": \"https://api.not-th.re/\", \"terms\":
-          \"https://scolasti.co/go/privacy\"}" > client/config.json
+          \"https://scolasti.co/go/privacy\", \"pullRequest\":
+          \"https://github.com/not-three/main/pull/${{ github.event.number }}\"}" > client/config.json
 
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
