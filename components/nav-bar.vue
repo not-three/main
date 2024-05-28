@@ -3,10 +3,28 @@
     <yes-no
       title="Are you sure?"
       :message="warning"
-      :visible="visible"
+      :visible="visible === 1"
       @yes="copyDecrypted"
-      @no="visible = false"
+      @no="visible = 0"
     />
+    <yes-no
+      title="Save File"
+      message="How many days should the file be stored?"
+      :visible="visible === 2"
+      alt-yes="Save"
+      alt-no="Cancel"
+      @yes="saveCustomTime"
+      @no="visible = 0"
+    >
+      <input
+        v-model.number="expiresCustomTime"
+        class="mb-4 w-full text-center text-black"
+        type="number"
+        min="1"
+        :max="maxExpireDays"
+        step="1"
+      />
+    </yes-no>
     <img id="logo" src="/assets/img/icon.svg" class="h-5 w-5 border-white border" alt="!3" />
     <h1 class="font-bold select-none transition-all duration-200 max-w-0 -mr-1 overflow-hidden whitespace-pre">
       not-th.re
@@ -43,6 +61,13 @@ const props = defineProps<{
 const expiresObject = ref({ hours: 0, minutes: 0, seconds: 0 })
 const expiresString = ref('XX:XX:XX')
 const scheduler = ref(0)
+const maxExpireDays = ref(30)
+const expiresCustomTime = ref(30)
+
+watch(() => props.defaultExpires, (value) => {
+  maxExpireDays.value = Math.floor(value / 1000 / 60 / 60 / 24)
+  expiresCustomTime.value = maxExpireDays.value
+}, { immediate: true })
 
 watch(() => props.expires, (value) => {
   if (!props.expires) {
@@ -84,7 +109,7 @@ onUnmounted(() => {
   clearTimeout(scheduler.value)
 })
 
-const visible = ref(false)
+const visible = ref(0)
 const route = useRoute()
 const warning = [
   'With this url the server will be able to decrypt your data.',
@@ -97,6 +122,7 @@ const entries = computed(() => ([
     name: 'file',
     entries: [
       ['save', 'Save for ' + Math.floor(props.defaultExpires / 1000 / 60 / 60 / 24) + ' days'],
+      ['save-custom', 'Save for custom time'],
       ['duplicate', 'Duplicate'],
       ['new', 'New'],
     ] as [string, string][],
@@ -131,7 +157,7 @@ function getBaseURL() {
 function copyDecrypted() {
   const url = getBaseURL();
   navigator.clipboard.writeText(`${url}decrypt/${route.params.id}/${location.hash.substring(1)}`)
-  visible.value = false
+  visible.value = 0
 }
 
 function handle(entry: string) {
@@ -148,7 +174,7 @@ function handle(entry: string) {
       navigator.clipboard.writeText(`${url}raw/${route.params.id}`)
       break
     case 'share-decrypted':
-      visible.value = true
+      visible.value = 1
       break
     case 'github':
       window.open('https://github.com/not-three/main', '_blank')
@@ -160,9 +186,20 @@ function handle(entry: string) {
       console.log(JSON.stringify(props.config))
       window.open(props.config.terms, '_blank')
       break
+    case 'save-custom':
+      visible.value = 2
+      break
     default:
       if (!['save', 'duplicate', 'new'].includes(entry)) throw new Error('Invalid entry')
       emit(entry as any);
   }
+}
+
+function saveCustomTime() {
+  const days = expiresCustomTime.value;
+  if (days < 0 || days > maxExpireDays.value) return;
+  expiresCustomTime.value = days;
+  emit('save', days * 24 * 60 * 60 * 1000);
+  visible.value = 0;
 }
 </script>

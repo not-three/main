@@ -16,6 +16,6 @@ export default defineEventHandler(async (event) => {
   }
   return {
     success: true,
-    count: Object.entries(count as any)[0][1] as number,
+    count: Number(Object.entries(count as any)[0][1]),
   };
 });
