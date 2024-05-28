@@ -1,0 +1,1 @@
+import{_ as t,v as s,I as o,t as a}from"./entry.DooxGThy.js";const c={},n={class:"base-container"};function r(e,_){return a(),s("div",n,[o(e.$slots,"default")])}const d=t(c,[["render",r]]);export{d as default};
