@@ -1,4 +1,5 @@
 {
   "baseURL": "/api/",
-  "terms": "https://example.com/"
+  "terms": "https://example.com/",
+  "pullRequest": "https://example.com/"
 }

@@ -1,4 +1,12 @@
 <template>
+  <gh-badge
+    v-if="configData.pullRequest"
+    :text="[
+      'This is an preview of an pull request.',
+      'Click here to view the pull request.',
+    ].join('\n')"
+    :to="configData.pullRequest"
+  />
   <yes-no
     :visible="errorVisible"
     title="Error"
