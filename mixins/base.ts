@@ -14,10 +14,12 @@ export default defineNuxtComponent({
   }),
   async mounted() {
     const handler = (event: any) => {
+      if (this.readOnly) return;
       if (event.origin !== location.origin) return;
       if (event.data?.type !== 'DUPLICATE_SHARE') return;
       this.content = event.data.content;
       window.removeEventListener('message', handler);
+      event.source.postMessage({ type: 'DUPLICATE_SHARE_OK' }, event.origin);
     }
     window.addEventListener('message', handler);
     const api = await this.getApi()
@@ -51,13 +53,18 @@ export default defineNuxtComponent({
       if (!this.content) return this.showError('No content to duplicate');
       const win = window.open(location.origin, '_blank');
       win?.addEventListener('load', async () => {
-        let counter = 0;
-        let interval = window.setInterval(() => {
-          if (counter++ > 200) {
-            window.clearInterval(interval);
-          }
-          win?.postMessage({ type: 'DUPLICATE_SHARE', content: this.content }, location.origin);
-        }, 100);
+        let ok = false;
+        let tries = 0;
+        win.addEventListener('message', (event) => {
+          if (event.origin !== location.origin) return;
+          if (event.data?.type !== 'DUPLICATE_SHARE_OK') return;
+          ok = true;
+        });
+        while (!ok && tries < 200) {
+          win.postMessage({ type: 'DUPLICATE_SHARE', content: this.content }, location.origin);
+          tries++;
+          await new Promise(r => setTimeout(r, 100));
+        }
       });
     },
     async newD() {

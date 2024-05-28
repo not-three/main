@@ -48,13 +48,13 @@ export default defineNuxtComponent({
   }),
   async mounted() {
     try {
+      this.readOnly = true;
       const api = await this.getApi();
       const secret = location.hash.substring(1);
       this.decryptURL = api.defaults.baseURL + `decrypt/${this.$route.params.id}/${secret}`;
       const res = await api.get(`json/${this.$route.params.id}`);
       this.content = CryptoJS.AES.decrypt(res.data.content, secret).toString(CryptoJS.enc.Utf8);
       this.isReady = true;
-      this.readOnly = true;
       this.expires = res.data.expires;
     } catch (e) {
       console.error(e);
