@@ -23,7 +23,7 @@ jobs:
       - name: Build with Docker
         run: >
           docker build
-          --build-arg="NUXT_APP_BASE_URL=/app-ui/pr-preview/pr-${{ github.event.number }}/"
+          --build-arg="NUXT_APP_BASE_URL=/pr-preview/pr-${{ github.event.number }}/"
           -t tmp .
       
       - name: Extract static files
@@ -34,10 +34,12 @@ jobs:
       - name: Updating config.json for not-th.re public
         run: >
           echo "{\"baseURL\": \"https://api.not-th.re/\", \"terms\":
-          \"https://scolasti.co/go/privacy\"}" > client/config.json
+          \"https://scolasti.co/go/privacy\", \"pullRequest\":
+          \"https://github.com/not-three/main/pull/${{ github.event.number }}\"}" > client/config.json
 
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          preview-branch: gh-pages
+          preview-branch: html-previews
           source-dir: ./client
+          custom-url: beta.not-th.re
