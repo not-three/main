@@ -9,19 +9,21 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400);
     return {success: false, error: 'Invalid ID or key'};
   }
-  const note = await db.from('notes').where('id', id).select('content, expires_at').first();
+  const note = await db.from('notes').where('id', id).select('content', 'expires_at', 'burn_after_reading').first();
   if (!note) {
     setResponseStatus(event, 404);
     return {success: false, error: 'Note not found'};
   }
+  if (note.burn_after_reading) await db.from('notes').where('id', id).del();
   try {
     return {
       success: true,
       content: CryptoJS.AES.decrypt(note.content, key).toString(CryptoJS.enc.Utf8),
-      expires: note.expiresAt,
+      expires: note.burn_after_reading ? Math.floor(new Date() / 1000) : note.expires_at,
+      burnt: note.burn_after_reading,
     }
   } catch (e) {
     setResponseStatus(event, 400);
-    return {success: false, error: 'Invalid key'};
+    return {success: false, error: 'Invalid key', burn: note.burnAfterReading};
   }
 })

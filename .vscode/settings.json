@@ -15,5 +15,10 @@
     "source.fixAll.eslint": "always",
     "source.fixAll.stylelint": "always",
     "editor.action.formatDocument": "always"
-  }
+  },
+  "Lua.workspace.library": [],
+  "Lua.workspace.userThirdParty": [
+    "/home/jb/.config/Code/User/workspaceStorage/691135d45da062e4861a884f3b52b52c/justarandomgeek.factoriomod-debug/sumneko-3rd"
+  ],
+  "Lua.workspace.checkThirdParty": "ApplyInMemory"
 }

@@ -11,8 +11,10 @@ export default defineNuxtComponent({
     errorVisible: false,
     errorMessage: '',
     defaultExpires: 1,
+    isBurn: false,
   }),
   async mounted() {
+    this.isBurn = useRoute().query.burn === '1';
     const handler = (event: any) => {
       if (this.readOnly) return;
       if (event.origin !== location.origin) return;
@@ -37,7 +39,7 @@ export default defineNuxtComponent({
       this.errorMessage = message;
       this.errorVisible = true;
     },
-    async saveD(expires?: number) {
+    async saveD(expires?: number, burnAfterReading: boolean = false) {
       if (this.readOnly) return this.showError('Cannot save readonly note');
       if (!this.content) return this.showError('No content to save');
       const secret = Math.random().toString(36).substring(2);
@@ -45,9 +47,10 @@ export default defineNuxtComponent({
       const res = await (await this.getApi()).post('create', {
         ...(expires ? { expires } : {}),
         content: encrypted,
+        burn_after_reading: burnAfterReading,
       });
-      // window.location.href = `/q/${res.data.id}#${secret}`;
-      this.$router.push('/q/' + res.data.id + '#' + secret);
+      // window.location.href = `/q/{id}#{secret}<?burn>`;
+      this.$router.push('/q/' + res.data.id + (burnAfterReading ? '?burn=1' : '') + '#' + secret);
     },
     async duplicateD() {
       if (!this.content) return this.showError('No content to duplicate');

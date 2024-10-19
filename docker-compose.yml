@@ -26,6 +26,7 @@ services:
       # MAX_NOTES_PER_HOUR: 200
       # EXPIRERY: 2592000 # 30 days
       # STATUS_KEY: something random to protect the status endpoint
+      # CLEANUP_INTERVAL: 900000 # 15 minutes
     
 
 volumes:

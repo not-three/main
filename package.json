@@ -19,7 +19,7 @@
     "monaco-editor": "^0.46.0",
     "monaco-editor-workers": "^0.45.0",
     "nanoid": "^5.0.6",
-    "nuxt": "^3.10.3",
+    "nuxt": "^3.13.2",
     "pg": "^8.11.3",
     "sqlite3": "^5.1.7",
     "vue": "^3.4.21",

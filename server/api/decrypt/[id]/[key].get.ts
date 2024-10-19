@@ -9,11 +9,12 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400);
     return {success: false, error: 'Invalid ID or key'};
   }
-  const note = await db.from('notes').where('id', id).select('content').first();
+  const note = await db.from('notes').where('id', id).select('content', 'burn_after_reading').first();
   if (!note) {
     setResponseStatus(event, 404);
     return {success: false, error: 'Note not found'};
   }
+  if (note.burn_after_reading) await db.from('notes').where('id', id).del();
   try {
     return CryptoJS.AES.decrypt(note.content, key).toString(CryptoJS.enc.Utf8);
   } catch (e) {
