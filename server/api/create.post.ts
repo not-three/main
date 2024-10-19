@@ -31,6 +31,10 @@ export default defineEventHandler(async (event) => {
       return {success: false, error: 'Expiry too long'}
     }
   }
+  if (typeof body.burn_after_reading !== 'boolean' && body.burn_after_reading !== undefined) {
+    setResponseStatus(event, 400);
+    return {success: false, error: 'Invalid burn_after_reading'}
+  }
   const realIP = event.node.req.socket.remoteAddress || '127.0.0.1';
   const ipEnv = process.env.IP_HEADER;
   const ip = ipEnv !== 'false' ? event.node.req.headers[ipEnv || 'x-real-ip'] || realIP : realIP;
@@ -47,6 +51,7 @@ export default defineEventHandler(async (event) => {
     content: body.content,
     created_at: db.fn.now(),
     expires_at: new Date(Date.now() + (body.expires || defaultExpires)),
+    burn_after_reading: body.burn_after_reading || false,
   });
   return {success: true, id};
 })

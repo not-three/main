@@ -14,7 +14,7 @@
       alt-yes="Save"
       alt-no="Cancel"
       @yes="saveCustomTime"
-      @no="visible = 0"
+      @no="cancelSave"
     >
       <input
         v-model.number="expiresCustomTime"
@@ -38,7 +38,7 @@
       @click="handle"
     />
     <div class="flex-grow" />
-    <template v-if="expires" title="Time until this file is deleted">
+    <template v-if="expires && !burnt">
       <icon name="lucide:alarm-clock" />
       <span class="font-mono translate-y-0.5">{{ expiresString }}</span>
     </template>
@@ -56,6 +56,7 @@ const props = defineProps<{
   config: any;
   defaultExpires: number;
   expires?: number|null;
+  burnt?: boolean;
 }>()
 
 const expiresObject = ref({ hours: 0, minutes: 0, seconds: 0 })
@@ -63,6 +64,7 @@ const expiresString = ref('XX:XX:XX')
 const scheduler = ref(0)
 const maxExpireDays = ref(30)
 const expiresCustomTime = ref(30)
+const burnSave = ref(false)
 
 watch(() => props.defaultExpires, (value) => {
   maxExpireDays.value = Math.floor(value / 1000 / 60 / 60 / 24)
@@ -123,19 +125,22 @@ const entries = computed(() => ([
     entries: [
       ['save', 'Save for ' + Math.floor(props.defaultExpires / 1000 / 60 / 60 / 24) + ' days'],
       ['save-custom', 'Save for custom time'],
+      ['save-burn', 'Save until read'],
       ['duplicate', 'Duplicate'],
       ['new', 'New'],
     ] as [string, string][],
   },
-  {
-    name: 'share',
-    entries: [
-      ['share-curl', 'Copy curl command'],
-      ['share-raw', 'Copy raw (encrypted) url'],
-      ['share-decrypted', 'Copy server side decryption url']
-    ] as [string, string][],
-    disabled: route.params.id === undefined,
-  },
+  ...(props.burnt ? [] : [
+    {
+      name: 'share',
+      entries: [
+        ['share-curl', 'Copy curl command'],
+        ['share-raw', 'Copy raw (encrypted) url'],
+        ['share-decrypted', 'Copy server side decryption url']
+      ] as [string, string][],
+      disabled: route.params.id === undefined,
+    },
+  ]),
   {
     name: 'about',
     entries: [
@@ -189,17 +194,28 @@ function handle(entry: string) {
     case 'save-custom':
       visible.value = 2
       break
+    case 'save-burn':
+      burnSave.value = true
+      visible.value = 2
+      break
     default:
       if (!['save', 'duplicate', 'new'].includes(entry)) throw new Error('Invalid entry')
       emit(entry as any);
   }
 }
 
+function cancelSave() {
+  burnSave.value = false;
+  visible.value = 0;
+  expiresCustomTime.value = maxExpireDays.value;
+}
+
 function saveCustomTime() {
   const days = expiresCustomTime.value;
   if (days < 0 || days > maxExpireDays.value) return;
-  expiresCustomTime.value = days;
-  emit('save', days * 24 * 60 * 60 * 1000);
+  expiresCustomTime.value = maxExpireDays.value;
+  emit('save', days * 24 * 60 * 60 * 1000, burnSave.value);
+  burnSave.value = false;
   visible.value = 0;
 }
 </script>

@@ -39,12 +39,34 @@ export class Database {
           x.string('ip').notNullable();
         });
       }
+
+      if (!await db.schema.hasTable('meta')) {
+        await db.schema.createTable('meta', (x) => {
+          x.string('key').primary().notNullable();
+          x.text('value').notNullable();
+        });
+        await db.from('meta').insert({key: 'version', value: '1'});
+      }
+      let version = await db.from('meta').where('key', 'version').select('value').first();
+      version = version ? version.value : '1';
+
+      if (version === '1') {
+        console.log('Migrating to version 2 of the database');
+        version = '2';
+        await db.schema.alterTable('notes', (x) => {
+          x.boolean('burn_after_reading').notNullable().defaultTo(false);
+        });
+        await db.from('meta').where('key', 'version').update({value: '2'});
+      }
     }, 15_000);
     
-    setInterval(async () => {
+    const deleteOldNotes = async () => {
       console.log('Deleting expired notes');
       await this.db.from('notes').where('expires_at', '<', this.db.fn.now()).del();
-    }, 1000 * 60 * 15)
+    }
+
+    setInterval(deleteOldNotes, Number(process.env.CLEANUP_INTERVAL) || 1000 * 60 * 15)
+    deleteOldNotes();
   }
 
   public static getInstance(): Database {
@@ -60,5 +82,5 @@ export class Database {
 }
 
 export default defineNitroPlugin(async (nitroApp) => {
-  const db = Database.getInstance().get();
+  Database.getInstance().get();
 })
