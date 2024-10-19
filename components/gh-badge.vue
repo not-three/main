@@ -1,7 +1,7 @@
 <template>
   <div class="fixed top-0 right-0 translate-x-1/2 -translate-y-1/2 z-50">
     <div
-      class="bg-white shadow-md p-2 select-none"
+      class="bg-white shadow-md p-2 select-none hover:opacity-100 opacity-40 transition-opacity duration-300"
       :class="{
         'cursor-pointer': props.to !== undefined,
       }"
@@ -9,7 +9,7 @@
       @click="click"
     >
       <div class="my-2 py-1 border-dotted border-black border-y-2 px-[200px]">
-        <div ref="container" class="">
+        <div ref="container" class="text-black">
           <slot>
             <p class="whitespace-pre text-center">{{ text || 'text missing' }}</p>
           </slot>
