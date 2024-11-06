@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   return {
     success: true,
     content: note.content,
-    expires: note.burn_after_reading ? Math.floor(new Date() / 1000) : note.expires_at,
+    expires: note.burn_after_reading ? Math.floor(+new Date() / 1000) : note.expires_at,
     burnt: note.burn_after_reading,
   }
 })

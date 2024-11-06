@@ -72,10 +72,8 @@ jobs:
           \"https://scolasti.co/go/privacy\"}" > client/config.json
 
       - name: Upload client bundle to cloudflare
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: not-three
-          directory: client
-          wranglerVersion: '3'
+          command: pages deploy client/ --project-name=not-three

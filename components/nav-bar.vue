@@ -185,7 +185,7 @@ function handle(entry: string) {
       window.open('https://github.com/not-three/main', '_blank')
       break
     case 'help':
-      window.open('https://github.com/not-three/main/issues/new', '_blank')
+      window.open('https://github.com/not-three/main/issues', '_blank')
       break
     case 'terms':
       console.log(JSON.stringify(props.config))
