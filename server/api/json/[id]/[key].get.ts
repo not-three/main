@@ -19,11 +19,11 @@ export default defineEventHandler(async (event) => {
     return {
       success: true,
       content: CryptoJS.AES.decrypt(note.content, key).toString(CryptoJS.enc.Utf8),
-      expires: note.burn_after_reading ? Math.floor(new Date() / 1000) : note.expires_at,
+      expires: note.burn_after_reading ? Math.floor(+new Date() / 1000) : note.expires_at,
       burnt: note.burn_after_reading,
     }
   } catch (e) {
     setResponseStatus(event, 400);
-    return {success: false, error: 'Invalid key', burn: note.burnAfterReading};
+    return {success: false, error: 'Invalid key', burnt: note.burn_after_reading};
   }
 })
