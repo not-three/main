@@ -1,4 +1,4 @@
-import type { LanguageDefinition, LanguageConfiguration, LanguageTokenizer } from '../types';
+import type { LanguageConfiguration, LanguageTokenizer } from '../types';
 
 export const configuration: LanguageConfiguration = {
   comments: {
