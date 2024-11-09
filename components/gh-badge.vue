@@ -1,7 +1,7 @@
 <template>
-  <div class="fixed top-0 right-0 translate-x-1/2 -translate-y-1/2 z-50">
+  <div class="fixed top-0 right-0 translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
     <div
-      class="bg-white shadow-md p-2 select-none hover:opacity-100 opacity-40 transition-opacity duration-300"
+      class="bg-white shadow-md p-2 select-none hover:opacity-100 opacity-40 transition-opacity duration-300 pointer-events-auto"
       :class="{
         'cursor-pointer': props.to !== undefined,
       }"
