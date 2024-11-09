@@ -42,12 +42,7 @@
       <select v-model="currLang" class="bg-black text-white focus:outline-none cursor-pointer">
         <option v-if="currLang === ''" value="" disabled>Language will be detected...</option>
         <option v-else-if="currentLanguage" value="auto">Auto</option>
-        <option value="plaintext">
-          Plaintext
-          {{ 'plaintext' === detectedLanguage ? '✨' : '' }}
-          {{ 'plaintext' === currentLanguage? '🔒' : '' }}
-        </option>
-        <option v-for="lang in loadedLanguages" :value="lang.id" :key="lang.id">
+        <option v-for="lang in loadedLanguages.sort((a, b) => a.id.localeCompare(b.id))" :key="lang.id" :value="lang.id">
           {{ lang.id.substring(0, 1).toUpperCase() + lang.id.substring(1) }}
           {{ lang.id === detectedLanguage ? '✨' : '' }}
           {{ lang.id === currentLanguage ? '🔒' : '' }}
