@@ -51,6 +51,7 @@ export default defineNuxtComponent({
       const res = await (await this.getApi()).post('create', {
         ...(expires ? { expires } : {}),
         content: encrypted,
+        language: this.currentLanguage,
         burn_after_reading: burnAfterReading,
       });
       // window.location.href = `/q/{id}#{secret}<?burn>`;

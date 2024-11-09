@@ -77,6 +77,7 @@ export default defineNuxtComponent({
         this.isReady = true;
         this.expires = res.data.expires;
         this.burnt = res.data.burnt;
+        this.currentLanguage = res.data.language;
       } catch (e) {
         console.error(e);
         this.$router.push('/?e=404');

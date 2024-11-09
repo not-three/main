@@ -3,7 +3,7 @@ import { KnexInstance } from "../../../plugins/knex";
 export default defineEventHandler(async (event) => {
   const db = event.context.db as KnexInstance;
   const id = getRouterParam(event, 'id');
-  const note = await db.from('notes').where('id', id).select('content', 'burn_after_reading').select('expires_at').first();
+  const note = await db.from('notes').where('id', id).select('content', 'burn_after_reading', 'language').select('expires_at').first();
   if (!note) {
     setResponseStatus(event, 404);
     return {success: false, error: 'Note not found'};
@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
     success: true,
     content: note.content,
     expires: note.burn_after_reading ? Math.floor(+new Date() / 1000) : note.expires_at,
+    language: note.language,
     burnt: note.burn_after_reading,
   }
 })

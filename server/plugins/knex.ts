@@ -58,6 +58,15 @@ export class Database {
         });
         await db.from('meta').where('key', 'version').update({value: '2'});
       }
+
+      if (version === '2') {
+        console.log('Migrating to version 3 of the database');
+        version = '3';
+        await db.schema.alterTable('notes', (x) => {
+          x.string('language', 16).nullable().defaultTo(null);
+        });
+        await db.from('meta').where('key', 'version').update({value: '3'});
+      }
     }, 15_000);
     
     const deleteOldNotes = async () => {
