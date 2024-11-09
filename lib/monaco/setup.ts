@@ -68,4 +68,22 @@ export async function setupMonaco() {
       'editor.background': '#1E1E1E',
     }
   });
+
+  // Set compiler options for TypeScript
+  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    allowJs: true,
+    checkJs: false,
+    noEmit: true,
+    noResolve: true, // Ignores import errors
+    module: monaco.languages.typescript.ModuleKind.ESNext,
+    target: monaco.languages.typescript.ScriptTarget.ESNext,
+    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+  });
+
+  // Set diagnostic options to suppress specific error codes (e.g., import errors)
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: false,
+    noSyntaxValidation: false,
+    diagnosticCodesToIgnore: [2792], // Error code for "Cannot find module"
+  });
 }
