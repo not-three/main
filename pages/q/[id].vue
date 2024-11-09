@@ -76,7 +76,7 @@ export default defineNuxtComponent({
         this.content = CryptoJS.AES.decrypt(res.data.content, secret).toString(CryptoJS.enc.Utf8);
         this.isReady = true;
         this.expires = res.data.expires;
-        this.burnt = res.data.burnt;
+        this.burnt = !!res.data.burnt;
         this.currentLanguage = res.data.language;
       } catch (e) {
         console.error(e);
