@@ -3,3 +3,4 @@ components: components/**
 server: server/**
 pages: pages/**
 public: public/**
+lib: lib/**
