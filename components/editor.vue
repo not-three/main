@@ -6,7 +6,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, type Ref } from 'vue';
 import * as monaco from 'monaco-editor';
 import { buildWorkerDefinition } from 'monaco-editor-workers';
-import type { EditorEvents } from '~/lib/monaco/types';
+import type { EditorEvents, LanguageInfo } from '~/lib/monaco/types';
 import { detectLanguageFromContent, debounce } from '~/lib/monaco/utils';
 import { setupMonaco } from '~/lib/monaco/setup';
 import { languageDefinitions } from '~/lib/monaco/languages';
@@ -56,8 +56,9 @@ onMounted(async () => {
   const availableLanguages = languageDefinitions.map(lang => ({
     id: lang.id,
     extensions: lang.extensions,
-    aliases: lang.aliases || []
-  }));
+    aliases: lang.aliases || [],
+    mimeTypes: lang.mimeTypes || [],
+  } as LanguageInfo));
   emit('loaded-languages', availableLanguages);
 
   const initialDetectedLanguage = detectLanguageFromContent(props.modelValue);

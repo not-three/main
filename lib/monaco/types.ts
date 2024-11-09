@@ -12,6 +12,7 @@ export interface LanguageInfo {
   id: string;
   extensions: string[];
   aliases: string[];
+  mimeTypes: string[];
 }
 
 export type EditorEvents = {
