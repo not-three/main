@@ -18,7 +18,7 @@ function registerLanguage(lang: LanguageDefinition) {
     id: lang.id,
     extensions: lang.extensions,
     aliases: lang.aliases,
-    mimetypes: lang.mimeTypes
+    mimetypes: lang.mimeTypes,
   });
 
   // Set language configuration if provided
@@ -27,24 +27,7 @@ function registerLanguage(lang: LanguageDefinition) {
   }
 
   // Set tokenizer if provided
-  if (lang.tokenizer) {
-    monaco.languages.setMonarchTokensProvider(lang.id, {
-      ...lang.tokenizer,
-      tokenizer: Object.fromEntries(
-        Object.entries(lang.tokenizer.tokenizer).map(([key, rules]) => [
-          key,
-          rules.map(rule => {
-            if (Array.isArray(rule)) {
-              // Ensure rule has all required elements for IMonarchLanguageRule
-              const [regex, token, next = '@pop'] = rule;
-              return [regex, token, next];
-            }
-            return rule;
-          })
-        ])
-      )
-    });
-  }
+  if (lang.tokenizer) monaco.languages.setMonarchTokensProvider(lang.id, lang.tokenizer);
 }
 
 export async function setupMonaco() {
@@ -85,54 +68,4 @@ export async function setupMonaco() {
       'editor.background': '#1E1E1E',
     }
   });
-}
-
-export function registerSimpleSyntax(
-  languageId: string,
-  config: {
-    keywords?: string[];
-    operators?: string[];
-    symbols?: string[];
-    tokenizer?: Record<string, monaco.languages.IMonarchLanguageRule[]>;
-  }
-): void {
-  const { keywords = [], operators = [], symbols = [], tokenizer = {} } = config;
-
-  const defaultTokenizer: monaco.languages.IMonarchLanguage = {
-    defaultToken: '',
-    tokenizer: {
-      root: [
-        // Keywords
-        [new RegExp(`\\b(?:${keywords.join('|')})\\b`), 'keyword', '@pop'], // Fixed template string
-
-        // Operators
-        [new RegExp(`[${operators.join('')}]`), 'operators', '@pop'],
-
-        // Symbols
-        [new RegExp(`[${symbols.join('')}]`), 'delimiter', '@pop'],
-
-        // Strings
-        [/"[^"]*"/, 'string', '@pop'],
-        [/'[^']*'/, 'string', '@pop'],
-
-        // Numbers
-        [/\d+/, 'number', '@pop'],
-
-        // Comments
-        [/\/\/.*$/, 'comment', '@pop'],
-        [/\/\*/, 'comment', '@comment'],
-
-        // Identifiers
-        [/[a-zA-Z_]\w*/, 'identifier', '@pop'],
-      ],
-      comment: [
-        [/[^/*]+/, 'comment', '@pop'],
-        [/\*\//, 'comment', '@pop'],
-        [/[/*]/, 'comment', '@pop']
-      ],
-      ...tokenizer
-    }
-  };
-
-  monaco.languages.setMonarchTokensProvider(languageId, defaultTokenizer);
 }
