@@ -60,7 +60,9 @@ onMounted(async () => {
   }));
   emit('loaded-languages', availableLanguages);
 
-  const initialLanguage = props.forcedLanguage || detectLanguageFromContent(props.modelValue);
+  const initialDetectedLanguage = detectLanguageFromContent(props.modelValue);
+  emit('language-detected', initialDetectedLanguage);
+  const initialLanguage = props.forcedLanguage || initialDetectedLanguage;
   currentLanguage.value = initialLanguage;
   const model = monaco.editor.createModel(props.modelValue, initialLanguage);
   
@@ -110,6 +112,7 @@ watch(() => props.readonly, (value) => {
 watch(() => props.modelValue, (newValue, oldValue) => {
   if (newValue === oldValue || newValue === editor?.getValue()) return;
   editor?.setValue(newValue);
+  console.log('Model value updated:', newValue);
   updateLanguage(newValue);
 });
 

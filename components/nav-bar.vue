@@ -38,20 +38,22 @@
       @click="handle"
     />
     <div class="flex-grow" />
-    <select v-model="currLang" :key="currLang" class="bg-black text-white border border-white px-2 py-1 selection:outline-none">
-      <option v-if="currLang === ''" value="" disabled>Language will be detected...</option>
-      <option v-else-if="currentLanguage" value="auto">Auto</option>
-      <option value="plaintext">
-        Plaintext
-        {{ 'plaintext' === detectedLanguage ? '✨' : '' }}
-        {{ 'plaintext' === currentLanguage? '🔒' : '' }}
-      </option>
-      <option v-for="lang in loadedLanguages" :value="lang.id" :key="lang.id">
-        {{ lang.id.substring(0, 1).toUpperCase() + lang.id.substring(1) }}
-        {{ lang.id === detectedLanguage ? '✨' : '' }}
-        {{ lang.id === currentLanguage ? '🔒' : '' }}
-      </option>
-    </select>
+    <div class="border border-white px-2 py-0.5 -my-1" :key="currLang">
+      <select v-model="currLang" class="bg-black text-white focus:outline-none cursor-pointer">
+        <option v-if="currLang === ''" value="" disabled>Language will be detected...</option>
+        <option v-else-if="currentLanguage" value="auto">Auto</option>
+        <option value="plaintext">
+          Plaintext
+          {{ 'plaintext' === detectedLanguage ? '✨' : '' }}
+          {{ 'plaintext' === currentLanguage? '🔒' : '' }}
+        </option>
+        <option v-for="lang in loadedLanguages" :value="lang.id" :key="lang.id">
+          {{ lang.id.substring(0, 1).toUpperCase() + lang.id.substring(1) }}
+          {{ lang.id === detectedLanguage ? '✨' : '' }}
+          {{ lang.id === currentLanguage ? '🔒' : '' }}
+        </option>
+      </select>
+    </div>
     <template v-if="expires && !burnt">
       <icon name="lucide:alarm-clock" class="ml-4" />
       <span class="font-mono translate-y-0.5">{{ expiresString }}</span>
@@ -173,7 +175,10 @@ const entries = computed(() => ([
 const emit = defineEmits(['save', 'duplicate', 'new', 'set-language'])
 
 const currLang = computed({
-  get: () => props.currentLanguage || props.detectedLanguage,
+  get: () => {
+    if (props.currentLanguage === null) return props.detectedLanguage;
+    return props.currentLanguage;
+  },
   set: (value) => emit('set-language', value === 'auto' ? null : value),
 })
 
