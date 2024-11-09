@@ -17,6 +17,9 @@ import { BashDefinition } from './languages/bash';
 import { ShDefinition } from './languages/sh';
 import { ZshDefinition } from './languages/zsh';
 import { HtmlDefinition } from './languages/html';
+import { XmlDefinition } from './languages/xml';
+import { SqlDefinition } from './languages/sql';
+import { PlaintextDefinition } from './languages/plaintext';
 
 export const languageDefinitions: LanguageDefinition[] = [
   TypeScriptDefinition,
@@ -36,4 +39,7 @@ export const languageDefinitions: LanguageDefinition[] = [
   ShDefinition,
   ZshDefinition,
   HtmlDefinition,
+  XmlDefinition,
+  SqlDefinition,
+  PlaintextDefinition,
 ];
