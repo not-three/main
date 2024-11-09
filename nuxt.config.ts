@@ -26,4 +26,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
   compatibilityDate: '2024-10-19',
+  vite: {
+    worker: {
+      format: 'es',
+    },
+  },
 })

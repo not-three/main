@@ -28,14 +28,19 @@
     :expires="expires"
     :default-expires="defaultExpires"
     :burnt="burnt"
+    :loaded-languages="loadedLanguages"
+    :detected-language="detectedLanguage"
+    :current-language="currentLanguage"
     @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
+    @set-language="currentLanguage = $event"
     no-save
   />
   <editor
     v-if="isReady"
     v-model="content"
+    :forced-language="currentLanguage"
     @save="saveD"
     @duplicate="duplicateD"
     @new="newD"

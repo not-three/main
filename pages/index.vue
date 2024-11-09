@@ -22,16 +22,23 @@
   <nav-bar
     :config="configData"
     :default-expires="defaultExpires"
+    :loaded-languages="loadedLanguages"
+    :detected-language="detectedLanguage"
+    :current-language="currentLanguage"
     @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
+    @set-language="currentLanguage = $event"
   />
   <editor
     v-model="content"
+    :forced-language="currentLanguage"
     @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
     @loaded="loading = false"
+    @loaded-languages="loadedLanguages = $event"
+    @language-detected="detectedLanguage = $event"
   />
 </template>
 

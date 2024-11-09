@@ -38,8 +38,22 @@
       @click="handle"
     />
     <div class="flex-grow" />
+    <select v-model="currLang" :key="currLang" class="bg-black text-white border border-white px-2 py-1 selection:outline-none">
+      <option v-if="currLang === ''" value="" disabled>Language will be detected...</option>
+      <option v-else-if="currentLanguage" value="auto">Auto</option>
+      <option value="plaintext">
+        Plaintext
+        {{ 'plaintext' === detectedLanguage ? '✨' : '' }}
+        {{ 'plaintext' === currentLanguage? '🔒' : '' }}
+      </option>
+      <option v-for="lang in loadedLanguages" :value="lang.id" :key="lang.id">
+        {{ lang.id.substring(0, 1).toUpperCase() + lang.id.substring(1) }}
+        {{ lang.id === detectedLanguage ? '✨' : '' }}
+        {{ lang.id === currentLanguage ? '🔒' : '' }}
+      </option>
+    </select>
     <template v-if="expires && !burnt">
-      <icon name="lucide:alarm-clock" />
+      <icon name="lucide:alarm-clock" class="ml-4" />
       <span class="font-mono translate-y-0.5">{{ expiresString }}</span>
     </template>
   </div>
@@ -52,11 +66,16 @@
 </style>
 
 <script lang="ts" setup>
+import type { LanguageInfo } from '~/lib/monaco/types';
+
 const props = defineProps<{
   config: any;
   defaultExpires: number;
   expires?: number|null;
   burnt?: boolean;
+  loadedLanguages: LanguageInfo[];
+  detectedLanguage: string;
+  currentLanguage: string | null;
 }>()
 
 const expiresObject = ref({ hours: 0, minutes: 0, seconds: 0 })
@@ -151,7 +170,12 @@ const entries = computed(() => ([
   }
 ]))
 
-const emit = defineEmits(['save', 'duplicate', 'new'])
+const emit = defineEmits(['save', 'duplicate', 'new', 'set-language'])
+
+const currLang = computed({
+  get: () => props.currentLanguage || props.detectedLanguage,
+  set: (value) => emit('set-language', value === 'auto' ? null : value),
+})
 
 function getBaseURL() {
   const url = props.config.baseURL;

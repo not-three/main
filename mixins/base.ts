@@ -1,5 +1,6 @@
 import CryptoJS from "crypto-js";
 import Axios, { type AxiosInstance } from "axios";
+import type { LanguageInfo } from "~/lib/monaco/types";
 
 export default defineNuxtComponent({
   data: () => ({
@@ -12,6 +13,9 @@ export default defineNuxtComponent({
     errorMessage: '',
     defaultExpires: 1,
     isBurn: false,
+    loadedLanguages: [] as LanguageInfo[],
+    detectedLanguage: '' as string,
+    currentLanguage: null as string | null,
   }),
   async mounted() {
     this.isBurn = useRoute().query.burn === '1';
