@@ -45,6 +45,8 @@
     @duplicate="duplicateD"
     @new="newD"
     @loaded="loading = false"
+    @loaded-languages="loadedLanguages = $event"
+    @language-detected="detectedLanguage = $event"
     readonly
   />
 </template>
