@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="w-full h-full" />
+  <div ref="container" class="w-full flex-grow" />
 </template>
 
 <script lang="ts" setup>
