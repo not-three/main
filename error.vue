@@ -1,5 +1,5 @@
 <template>
-  <img src="/assets/img/icon.svg" class="h-5 w-5 border-white border fixed m-4" alt="!3" />
+  <img src="/assets/img/icon.svg" class="h-5 w-5 border-white border fixed m-4 select-none" alt="!3" />
   <div class="fixed bottom-0 right-0 pointer-events-none select-none">
     <p class="text-[60vh] opacity-20 font-semibold translate-y-1/3">error</p>
   </div>
