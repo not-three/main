@@ -3,8 +3,8 @@
   <div class="fixed bottom-0 right-0 pointer-events-none select-none">
     <p class="text-[60vh] opacity-20 font-semibold translate-y-1/3">error</p>
   </div>
-  <div class="w-full min-h-screen flex justify-center items-center">
-    <div class="border-white border p-4">
+  <div class="w-full min-h-screen flex justify-center items-center p-8">
+    <div class="border-white border p-4 max-w-xl">
       <h1 class="text-4xl font-bold">Error {{ error?.statusCode }}</h1>
       <p class="text-lg mt-4">{{ error?.message }}</p>
       <p class="text-xs text-white/60 mt-2">
