@@ -5,10 +5,6 @@ export const YamlDefinition: LanguageDefinition = {
   extensions: ['.yml', '.yaml'],
   aliases: ['YAML', 'yaml'],
   mimeTypes: ['text/x-yaml'],
-  loader: async () => import('./yaml.async').then(module => ({
-    configuration: module.configuration,
-    tokenizer: module.tokenizer,
-  })),
   detectionPatterns: [
     { pattern: /^[\s\n]*---/, weight: 2 },
     { pattern: /^[\s\n]*[\w-]+:\s*[|\[{]?/, weight: 1 },

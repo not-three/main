@@ -13,9 +13,7 @@ import { IniDefinition } from './languages/ini';
 import { MarkdownDefinition } from './languages/markdown';
 import { PythonDefinition } from './languages/python';
 import { PhpDefinition } from './languages/php';
-import { BashDefinition } from './languages/bash';
-import { ShDefinition } from './languages/sh';
-import { ZshDefinition } from './languages/zsh';
+import { ShellDefinition } from './languages/shell';
 import { HtmlDefinition } from './languages/html';
 import { XmlDefinition } from './languages/xml';
 import { SqlDefinition } from './languages/sql';
@@ -35,9 +33,7 @@ export const languageDefinitions: LanguageDefinition[] = [
   MarkdownDefinition,
   PythonDefinition,
   PhpDefinition,
-  BashDefinition,
-  ShDefinition,
-  ZshDefinition,
+  ShellDefinition,
   HtmlDefinition,
   XmlDefinition,
   SqlDefinition,

@@ -54,14 +54,10 @@ export interface LanguageDefinition extends Omit<LanguageMapping, 'mimeTypes'> {
   id: string;
   configuration?: LanguageConfiguration;
   tokenizer?: LanguageTokenizer;
-  mimeTypes?: string[]; // Keep for internal use
-  loader?: () => Promise<{
-    configuration?: LanguageConfiguration;
-    tokenizer?: LanguageTokenizer;
-  }>;
+  mimeTypes?: string[];
   detectionPatterns?: {
     pattern: RegExp;
-    weight?: number; // Optional weight for pattern importance
+    weight?: number;
   }[];
 }
 

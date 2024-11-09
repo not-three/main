@@ -5,10 +5,6 @@ export const MarkdownDefinition: LanguageDefinition = {
   extensions: ['.md', '.markdown'],
   aliases: ['Markdown', 'markdown'],
   mimeTypes: ['text/markdown'],
-  loader: async () => import('./markdown.async').then(module => ({
-    configuration: module.configuration,
-    tokenizer: module.tokenizer,
-  })),
   detectionPatterns: [
     { pattern: /^#{1,6}\s+/, weight: 2 },
     { pattern: /^\s*>/, weight: 1 },
