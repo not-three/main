@@ -35,6 +35,7 @@
     @save="saveD"
     @duplicate="duplicateD"
     @set-language="currentLanguage = $event"
+    @download="download"
     no-save
   />
   <editor

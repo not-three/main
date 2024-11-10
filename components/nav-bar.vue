@@ -41,7 +41,7 @@
     <div class="border border-white px-2 py-0.5 -my-1" :key="currLang">
       <select v-model="currLang" class="bg-black text-white focus:outline-none cursor-pointer">
         <option v-if="currLang === ''" value="" disabled>Language will be detected...</option>
-        <option v-else-if="currentLanguage" value="auto">Auto</option>
+        <option v-else-if="currentLanguage" value="auto">Auto 🤖</option>
         <option v-for="lang in loadedLanguages.sort((a, b) => a.id.localeCompare(b.id))" :key="lang.id" :value="lang.id">
           {{ lang.id.substring(0, 1).toUpperCase() + lang.id.substring(1) }}
           {{ lang.id === detectedLanguage ? '✨' : '' }}
@@ -142,21 +142,20 @@ const entries = computed(() => ([
       ['save', 'Save for ' + Math.floor(props.defaultExpires / 1000 / 60 / 60 / 24) + ' days'],
       ['save-custom', 'Save for custom time'],
       ['save-burn', 'Save until read'],
+      ['download', 'Download'],
       ['duplicate', 'Duplicate'],
       ['new', 'New'],
     ] as [string, string][],
   },
-  ...(props.burnt ? [] : [
-    {
-      name: 'share',
-      entries: [
-        ['share-curl', 'Copy curl command'],
-        ['share-raw', 'Copy raw (encrypted) url'],
-        ['share-decrypted', 'Copy server side decryption url']
-      ] as [string, string][],
-      disabled: route.params.id === undefined,
-    },
-  ]),
+  {
+    name: 'share',
+    entries: [
+      ['share-curl', 'Copy curl command'],
+      ['share-raw', 'Copy raw (encrypted) url'],
+      ['share-decrypted', 'Copy server side decryption url']
+    ] as [string, string][],
+    disabled: route.params.id === undefined || props.burnt,
+  },
   {
     name: 'about',
     entries: [
@@ -167,7 +166,7 @@ const entries = computed(() => ([
   }
 ]))
 
-const emit = defineEmits(['save', 'duplicate', 'new', 'set-language'])
+const emit = defineEmits(['save', 'duplicate', 'new', 'set-language', 'download'])
 
 const currLang = computed({
   get: () => {
@@ -223,7 +222,7 @@ function handle(entry: string) {
       visible.value = 2
       break
     default:
-      if (!['save', 'duplicate', 'new'].includes(entry)) throw new Error('Invalid entry')
+      if (!['save', 'duplicate', 'new', 'download'].includes(entry)) throw new Error('Invalid entry')
       emit(entry as any);
   }
 }

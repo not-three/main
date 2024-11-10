@@ -85,6 +85,21 @@ export default defineNuxtComponent({
         baseURL: this.configData.baseURL,
       })
       return this.api;
-    }
+    },
+    download() {
+      if (!this.content) return this.showError('No content to download');
+      const lang = this.currentLanguage || this.detectedLanguage;
+      const info = this.loadedLanguages.find(l => l.id === lang) || { mimeTypes: ['text/plain'], extensions: ['.txt'] };
+      const ext = info.extensions[0];
+      const mime = info.mimeTypes[0];
+      const random = Math.random().toString(36).substring(2);
+      const blob = new Blob([this.content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `not-th.re_${random}${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    },
   }
 })

@@ -29,6 +29,7 @@
     @save="saveD"
     @duplicate="duplicateD"
     @set-language="currentLanguage = $event"
+    @download="download"
   />
   <editor
     v-model="content"
