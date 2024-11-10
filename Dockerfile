@@ -14,7 +14,8 @@ ENV NUXT_APP_BASE_URL=$NUXT_APP_BASE_URL
 RUN pnpm build
 RUN cp -rL .output /app/SERVER_OUTPUT
 
-RUN pnpm generate
+RUN test -d .output-prebuilt || pnpm generate
+RUN test -d .output-prebuilt && rm .output && mv .output-prebuilt .output
 RUN cp -rL .output/public /app/CLIENT_OUTPUT
 
 ### Production Image
