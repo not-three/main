@@ -9,7 +9,7 @@
     <yes-no
       title="Are you sure?"
       :message="warning"
-      :visible="visible === 1 || visible === 4"
+      :visible="visible === 1"
       @yes="copyDecrypted"
       @no="visible = 0"
     />
@@ -70,6 +70,7 @@
 
 <script lang="ts" setup>
 import type { LanguageInfo } from '~/lib/monaco/types';
+import { generateShare, type ShareUrlData } from '~/lib/share';
 
 const props = defineProps<{
   config: any;
@@ -134,6 +135,15 @@ onUnmounted(() => {
   clearTimeout(scheduler.value)
 })
 
+const shareUrls = computed<ShareUrlData>(() => {
+  const { app } = useRuntimeConfig();
+  const { params } = useRoute();
+  const extension = props.loadedLanguages.find(
+    (lang) =>lang.id === (props.currentLanguage ?? props.detectedLanguage)
+  )?.extensions[0] ?? 'txt';
+  return generateShare(props.config.baseURL || '/', app.baseURL, params.id+'', extension);
+})
+
 const showShareDialogAlways = ref(localStorage.getItem('showShareDialogAlways') === 'true')
 const lastEvent = ref('')
 const visible = ref(0)
@@ -158,11 +168,15 @@ const entries = computed(() => ([
   },
   {
     name: 'share',
-    entries: [
-      ['share-curl', 'Copy curl command'],
-      ['share-raw', 'Copy raw (encrypted) url'],
-      ['share-decrypted', 'Copy server side decryption url']
-    ] as [string, string][],
+    entries: Object.keys(shareUrls.value).reduce((acc, cat) => {
+      const category = shareUrls.value[cat as keyof ShareUrlData];
+      const suffix = cat === 'ssd' ? ' (Server-Side Decryption)' : '';
+      acc.push(...Object.keys(category).map(
+        (key) => [`share-${cat}-${key}`, key + suffix] as [string, string])
+      );
+      console.log(acc)
+      return acc;
+    }, [] as [string, string][]).sort((a, b) => a[1].localeCompare(b[1])),
     disabled: route.params.id === undefined || props.burnt,
   },
   {
@@ -192,43 +206,35 @@ function getBaseURL() {
 }
 
 function copyDecrypted() {
-  const url = getBaseURL();
-  const u = `${url}decrypt/${route.params.id}/${location.hash.substring(1)}`;
-  if (visible.value === 4) {
-    shareDialogContent.value = u
-    visible.value = 3
+  if (showShareDialogAlways.value) {
+    visible.value = 3;
   } else {
-    navigator.clipboard.writeText(u)
-    visible.value = 0
+    navigator.clipboard.writeText(shareDialogContent.value);
+    visible.value = 0;
   }
 }
 
 function handle(entry: string) {
-  const url = getBaseURL();
+  if (entry.startsWith('share-')) {
+    const split = entry.split('-');
+    const cat = split[1];
+    const key = split.slice(2).join('-');
+    shareDialogContent.value = shareUrls.value[
+      cat as keyof ShareUrlData
+    ][key as keyof ShareUrlData];
+    if (lastEvent.value === entry) {
+      visible.value = 3;
+    } else if (cat === 'ssd') {
+      visible.value = 1;
+    } else if (showShareDialogAlways.value) {
+      visible.value = 3;
+    } else {
+      navigator.clipboard.writeText(shareDialogContent.value)
+    }
+    lastEvent.value = entry;
+    return;
+  }
   switch (entry) {
-    case 'share-curl':
-      const cmd = [
-        `curl ${url}raw/${route.params.id} | base64 -d |`,
-        `openssl enc -aes-256-cbc -d -pass pass:${location.hash.substring(1)}`,
-        '-md md5 -salt -in /dev/stdin 2>/dev/null | cat',
-      ].join(' ');
-      if (lastEvent.value === 'share-curl' || showShareDialogAlways.value) {
-        shareDialogContent.value = cmd
-        visible.value = 3
-      } else navigator.clipboard.writeText(cmd)
-      break
-    case 'share-raw':
-      const u = `${url}raw/${route.params.id}`;
-      if (lastEvent.value === 'share-raw' || showShareDialogAlways.value) {
-        shareDialogContent.value = u
-        visible.value = 3
-      } else navigator.clipboard.writeText(u)
-      break
-    case 'share-decrypted':
-      if (lastEvent.value === 'share-decrypted' || showShareDialogAlways.value) {
-        visible.value = 4
-      } else visible.value = 1
-      break
     case 'github':
       window.open('https://github.com/not-three/main', '_blank')
       break
