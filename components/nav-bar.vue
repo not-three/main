@@ -1,9 +1,15 @@
 <template>
   <div class="w-screen flex gap-2 bg-black text-white px-4 py-1 items-center">
+    <share-dialog
+      :content="shareDialogContent"
+      :visible="visible === 3"
+      @close="visible = 0"
+      @update-show-always="showShareDialogAlways = $event"
+    />
     <yes-no
       title="Are you sure?"
       :message="warning"
-      :visible="visible === 1"
+      :visible="visible === 1 || visible === 4"
       @yes="copyDecrypted"
       @no="visible = 0"
     />
@@ -81,6 +87,7 @@ const scheduler = ref(0)
 const maxExpireDays = ref(30)
 const expiresCustomTime = ref(30)
 const burnSave = ref(false)
+const shareDialogContent = ref('')
 
 watch(() => props.defaultExpires, (value) => {
   maxExpireDays.value = Math.floor(value / 1000 / 60 / 60 / 24)
@@ -127,6 +134,8 @@ onUnmounted(() => {
   clearTimeout(scheduler.value)
 })
 
+const showShareDialogAlways = ref(localStorage.getItem('showShareDialogAlways') === 'true')
+const lastEvent = ref('')
 const visible = ref(0)
 const route = useRoute()
 const warning = [
@@ -184,25 +193,41 @@ function getBaseURL() {
 
 function copyDecrypted() {
   const url = getBaseURL();
-  navigator.clipboard.writeText(`${url}decrypt/${route.params.id}/${location.hash.substring(1)}`)
-  visible.value = 0
+  const u = `${url}decrypt/${route.params.id}/${location.hash.substring(1)}`;
+  if (visible.value === 4) {
+    shareDialogContent.value = u
+    visible.value = 3
+  } else {
+    navigator.clipboard.writeText(u)
+    visible.value = 0
+  }
 }
 
 function handle(entry: string) {
   const url = getBaseURL();
   switch (entry) {
     case 'share-curl':
-      navigator.clipboard.writeText([
+      const cmd = [
         `curl ${url}raw/${route.params.id} | base64 -d |`,
         `openssl enc -aes-256-cbc -d -pass pass:${location.hash.substring(1)}`,
         '-md md5 -salt -in /dev/stdin 2>/dev/null | cat',
-      ].join(' '))
+      ].join(' ');
+      if (lastEvent.value === 'share-curl' || showShareDialogAlways.value) {
+        shareDialogContent.value = cmd
+        visible.value = 3
+      } else navigator.clipboard.writeText(cmd)
       break
     case 'share-raw':
-      navigator.clipboard.writeText(`${url}raw/${route.params.id}`)
+      const u = `${url}raw/${route.params.id}`;
+      if (lastEvent.value === 'share-raw' || showShareDialogAlways.value) {
+        shareDialogContent.value = u
+        visible.value = 3
+      } else navigator.clipboard.writeText(u)
       break
     case 'share-decrypted':
-      visible.value = 1
+      if (lastEvent.value === 'share-decrypted' || showShareDialogAlways.value) {
+        visible.value = 4
+      } else visible.value = 1
       break
     case 'github':
       window.open('https://github.com/not-three/main', '_blank')
@@ -225,6 +250,7 @@ function handle(entry: string) {
       if (!['save', 'duplicate', 'new', 'download'].includes(entry)) throw new Error('Invalid entry')
       emit(entry as any);
   }
+  lastEvent.value = entry
 }
 
 function cancelSave() {
