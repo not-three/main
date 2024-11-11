@@ -17,6 +17,20 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400);
     return {success: false, error: 'Content too short'}
   }
+  if (body.language) {
+    if (typeof body.language !== 'string') {
+      setResponseStatus(event, 400);
+      return {success: false, error: 'Invalid language'}
+    }
+    if (body.language.length > 16) {
+      setResponseStatus(event, 400);
+      return {success: false, error: 'Language too long'}
+    }
+    if (/[^a-zA-Z0-9_-]/.test(body.language)) {
+      setResponseStatus(event, 400);
+      return {success: false, error: 'Invalid language'}
+    }
+  }
   if (body.expires) {
     if (typeof body.expires !== 'number') {
       setResponseStatus(event, 400);
@@ -51,6 +65,7 @@ export default defineEventHandler(async (event) => {
     content: body.content,
     created_at: db.fn.now(),
     expires_at: new Date(Date.now() + (body.expires || defaultExpires)),
+    language: body.language || null,
     burn_after_reading: body.burn_after_reading || false,
   });
   return {success: true, id};

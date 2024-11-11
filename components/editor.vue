@@ -1,60 +1,129 @@
 <template>
-  <div ref="container" class="w-full h-full" />
+  <div ref="container" class="w-full flex-grow" />
 </template>
 
 <script lang="ts" setup>
-const container = ref(null) as any as Ref<HTMLDivElement>;
+import { ref, watch, onMounted, onBeforeUnmount, type Ref } from 'vue';
+import * as monaco from 'monaco-editor';
+import { buildWorkerDefinition } from 'monaco-editor-workers';
+import type { EditorEvents, LanguageInfo } from '~/lib/monaco/types';
+import { detectLanguageFromContent, debounce } from '~/lib/monaco/utils';
+import { setupMonaco } from '~/lib/monaco/setup';
+import { languageDefinitions } from '~/lib/monaco/languages';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: string;
   readonly?: boolean;
-}>();
+  theme?: string;
+  forcedLanguage?: string|null;
+}>(), {
+  readonly: false,
+  theme: 'vs-dark'
+});
 
-const emit = defineEmits(['update:modelValue', 'loaded', 'save', 'duplicate', 'new']);
+const emit = defineEmits<EditorEvents>();
+const container = ref(null) as any as Ref<HTMLDivElement>;
+let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
-let editor: any = null;
+const currentLanguage = ref<string>('plaintext');
+
+const setEditorLanguage = (languageId: string) => {
+  if (currentLanguage.value === languageId) return;
+  if (editor && editor.getModel()) {
+    console.log('Setting language:', languageId);
+    currentLanguage.value = languageId;
+    monaco.editor.setModelLanguage(editor.getModel()!, languageId);
+  }
+};
+
+const updateLanguage = debounce((content: string) => {
+  if (editor) {
+    const detectedLanguage = detectLanguageFromContent(content);
+    emit('language-detected', detectedLanguage);
+    if (!props.forcedLanguage) setEditorLanguage(detectedLanguage);
+  }
+}, 500);
 
 onMounted(async () => {
-  const [monaco, worker] = await Promise.all([
-    import('monaco-editor'),
-    import('monaco-editor-workers'),
-  ]);
-  worker.buildWorkerDefinition(
+  buildWorkerDefinition(
     '../node_modules/monaco-editor-workers/dist/workers',
     import.meta.url,
     false
   );
-  const ed = monaco.editor.create(container.value, {
-    value: props.modelValue + '',
-    language: 'javascript',
-    theme: 'vs-dark',
-    readOnly: !!props.readonly,
+  
+  await setupMonaco();
+
+  const availableLanguages = languageDefinitions.map(lang => ({
+    id: lang.id,
+    extensions: lang.extensions,
+    aliases: lang.aliases || [],
+    mimeTypes: lang.mimeTypes || [],
+  } as LanguageInfo));
+  emit('loaded-languages', availableLanguages);
+
+  const initialDetectedLanguage = detectLanguageFromContent(props.modelValue);
+  emit('language-detected', initialDetectedLanguage);
+  const initialLanguage = props.forcedLanguage || initialDetectedLanguage;
+  currentLanguage.value = initialLanguage;
+  const model = monaco.editor.createModel(props.modelValue, initialLanguage);
+  
+  editor = monaco.editor.create(container.value, {
+    model,
+    theme: props.theme,
+    readOnly: props.readonly,
+    automaticLayout: true,
+    minimap: { enabled: true },
+    scrollBeyondLastLine: false,
+    fontSize: 14,
+    tabSize: 2,
+    wordWrap: 'on',
+    lineNumbers: 'on',
   });
-  editor = ed;
-  ed.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, async () => {
+
+  // Register keyboard shortcuts
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
     emit('save');
   });
-  ed.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD, async () => {
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD, () => {
     emit('duplicate');
   });
-  ed.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyN, async () => {
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyN, () => {
     emit('new');
   });
-  ed.onDidChangeModelContent(async () => {
-    setTimeout(() => {
-      emit('update:modelValue', ed.getValue());
-    }, 1);
-    // emit('update:modelValue', ed.getValue());
+
+  // Handle content changes
+  editor.onDidChangeModelContent(() => {
+    const value = editor?.getValue() || '';
+    emit('update:modelValue', value);
+    updateLanguage(value);
   });
+
   emit('loaded');
 });
 
-watch(() => props.readonly, (value) => {
-  editor.updateOptions({ readOnly: !!value });
+onBeforeUnmount(() => {
+  editor?.dispose();
 });
 
-watch(() => props.modelValue, (n, o) => {
-  if (n === o || n === editor.getValue()) return;
-  editor.setValue(n);
+// Watch for prop changes
+watch(() => props.readonly, (value) => {
+  editor?.updateOptions({ readOnly: !!value });
+});
+
+watch(() => props.modelValue, (newValue, oldValue) => {
+  if (newValue === oldValue || newValue === editor?.getValue()) return;
+  editor?.setValue(newValue);
+  console.log('Model value updated:', newValue);
+  updateLanguage(newValue);
+});
+
+watch(() => props.theme, (newTheme) => {
+  editor?.updateOptions({ theme: newTheme });
+});
+
+watch(() => props.forcedLanguage, (newLanguage) => {
+  if (!editor) return;
+  if (newLanguage) setEditorLanguage(newLanguage);
+  else setEditorLanguage(detectLanguageFromContent(editor.getValue()));
 });
 </script>

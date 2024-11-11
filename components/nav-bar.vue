@@ -1,5 +1,11 @@
 <template>
   <div class="w-screen flex gap-2 bg-black text-white px-4 py-1 items-center">
+    <share-dialog
+      :content="shareDialogContent"
+      :visible="visible === 3"
+      @close="visible = 0"
+      @update-show-always="showShareDialogAlways = $event"
+    />
     <yes-no
       title="Are you sure?"
       :message="warning"
@@ -38,8 +44,19 @@
       @click="handle"
     />
     <div class="flex-grow" />
+    <div class="border border-white px-2 py-0.5 -my-1" :key="currLang">
+      <select v-model="currLang" class="bg-black text-white focus:outline-none cursor-pointer">
+        <option v-if="currLang === ''" value="" disabled>Language will be detected...</option>
+        <option v-else-if="currentLanguage" value="auto">Auto 🤖</option>
+        <option v-for="lang in loadedLanguages.sort((a, b) => a.id.localeCompare(b.id))" :key="lang.id" :value="lang.id">
+          {{ lang.id.substring(0, 1).toUpperCase() + lang.id.substring(1) }}
+          {{ lang.id === detectedLanguage ? '✨' : '' }}
+          {{ lang.id === currentLanguage ? '🔒' : '' }}
+        </option>
+      </select>
+    </div>
     <template v-if="expires && !burnt">
-      <icon name="lucide:alarm-clock" />
+      <icon name="lucide:alarm-clock" class="ml-4" />
       <span class="font-mono translate-y-0.5">{{ expiresString }}</span>
     </template>
   </div>
@@ -52,11 +69,17 @@
 </style>
 
 <script lang="ts" setup>
+import type { LanguageInfo } from '~/lib/monaco/types';
+import { generateShare, WARNING, type ShareUrlData } from '~/lib/share';
+
 const props = defineProps<{
   config: any;
   defaultExpires: number;
   expires?: number|null;
   burnt?: boolean;
+  loadedLanguages: LanguageInfo[];
+  detectedLanguage: string;
+  currentLanguage: string | null;
 }>()
 
 const expiresObject = ref({ hours: 0, minutes: 0, seconds: 0 })
@@ -65,6 +88,7 @@ const scheduler = ref(0)
 const maxExpireDays = ref(30)
 const expiresCustomTime = ref(30)
 const burnSave = ref(false)
+const shareDialogContent = ref('')
 
 watch(() => props.defaultExpires, (value) => {
   maxExpireDays.value = Math.floor(value / 1000 / 60 / 60 / 24)
@@ -111,13 +135,20 @@ onUnmounted(() => {
   clearTimeout(scheduler.value)
 })
 
+const shareUrls = computed<ShareUrlData>(() => {
+  const { app } = useRuntimeConfig();
+  const { params } = useRoute();
+  const extension = props.loadedLanguages.find(
+    (lang) =>lang.id === (props.currentLanguage ?? props.detectedLanguage)
+  )?.extensions[0] ?? 'txt';
+  return generateShare(props.config.baseURL || '/', app.baseURL, params.id+'', extension);
+})
+
+const showShareDialogAlways = ref(localStorage.getItem('showShareDialogAlways') === 'true')
+const lastEvent = ref('')
 const visible = ref(0)
 const route = useRoute()
-const warning = [
-  'With this url the server will be able to decrypt your data.',
-  'This has it\'s benefits, and we do not store the data, but',
-  'it\'s still a risk. Are you sure you want to share this url?',
-].join(' ')
+const warning = WARNING
 
 const entries = computed(() => ([
   {
@@ -126,21 +157,27 @@ const entries = computed(() => ([
       ['save', 'Save for ' + Math.floor(props.defaultExpires / 1000 / 60 / 60 / 24) + ' days'],
       ['save-custom', 'Save for custom time'],
       ['save-burn', 'Save until read'],
+      ['download', 'Download'],
       ['duplicate', 'Duplicate'],
       ['new', 'New'],
     ] as [string, string][],
   },
-  ...(props.burnt ? [] : [
-    {
-      name: 'share',
-      entries: [
-        ['share-curl', 'Copy curl command'],
-        ['share-raw', 'Copy raw (encrypted) url'],
-        ['share-decrypted', 'Copy server side decryption url']
-      ] as [string, string][],
-      disabled: route.params.id === undefined,
-    },
-  ]),
+  {
+    name: 'share',
+    entries: [
+      ['share-overview', 'Overview'],
+      ...Object.keys(shareUrls.value).reduce((acc, cat) => {
+        const category = shareUrls.value[cat as keyof ShareUrlData];
+        const suffix = cat === 'ssd' ? ' (Server-Side Decryption)' : '';
+        acc.push(...Object.keys(category).map(
+          (key) => [`share-${cat}-${key}`, key + suffix] as [string, string])
+        );
+        console.log(acc)
+        return acc;
+      }, [] as [string, string][]).sort((a, b) => a[1].localeCompare(b[1])),
+    ] as [string, string][],
+    disabled: route.params.id === undefined || props.burnt,
+  },
   {
     name: 'about',
     entries: [
@@ -151,7 +188,15 @@ const entries = computed(() => ([
   }
 ]))
 
-const emit = defineEmits(['save', 'duplicate', 'new'])
+const emit = defineEmits(['save', 'duplicate', 'new', 'set-language', 'download', 'share-overview'])
+
+const currLang = computed({
+  get: () => {
+    if (props.currentLanguage === null) return props.detectedLanguage;
+    return props.currentLanguage;
+  },
+  set: (value) => emit('set-language', value === 'auto' ? null : value),
+})
 
 function getBaseURL() {
   const url = props.config.baseURL;
@@ -160,27 +205,35 @@ function getBaseURL() {
 }
 
 function copyDecrypted() {
-  const url = getBaseURL();
-  navigator.clipboard.writeText(`${url}decrypt/${route.params.id}/${location.hash.substring(1)}`)
-  visible.value = 0
+  if (showShareDialogAlways.value) {
+    visible.value = 3;
+  } else {
+    navigator.clipboard.writeText(shareDialogContent.value);
+    visible.value = 0;
+  }
 }
 
 function handle(entry: string) {
-  const url = getBaseURL();
+  if (entry.startsWith('share-') && entry !== 'share-overview') {
+    const split = entry.split('-');
+    const cat = split[1];
+    const key = split.slice(2).join('-');
+    shareDialogContent.value = shareUrls.value[
+      cat as keyof ShareUrlData
+    ][key as keyof ShareUrlData];
+    if (lastEvent.value === entry) {
+      visible.value = 3;
+    } else if (cat === 'ssd') {
+      visible.value = 1;
+    } else if (showShareDialogAlways.value) {
+      visible.value = 3;
+    } else {
+      navigator.clipboard.writeText(shareDialogContent.value)
+    }
+    lastEvent.value = entry;
+    return;
+  }
   switch (entry) {
-    case 'share-curl':
-      navigator.clipboard.writeText([
-        `curl ${url}raw/${route.params.id} | base64 -d |`,
-        `openssl enc -aes-256-cbc -d -pass pass:${location.hash.substring(1)}`,
-        '-md md5 -salt -in /dev/stdin 2>/dev/null | cat',
-      ].join(' '))
-      break
-    case 'share-raw':
-      navigator.clipboard.writeText(`${url}raw/${route.params.id}`)
-      break
-    case 'share-decrypted':
-      visible.value = 1
-      break
     case 'github':
       window.open('https://github.com/not-three/main', '_blank')
       break
@@ -199,9 +252,10 @@ function handle(entry: string) {
       visible.value = 2
       break
     default:
-      if (!['save', 'duplicate', 'new'].includes(entry)) throw new Error('Invalid entry')
+      if (!['save', 'duplicate', 'new', 'download', 'share-overview'].includes(entry)) throw new Error('Invalid entry')
       emit(entry as any);
   }
+  lastEvent.value = entry
 }
 
 function cancelSave() {

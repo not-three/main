@@ -1,5 +1,6 @@
 import CryptoJS from "crypto-js";
 import Axios, { type AxiosInstance } from "axios";
+import type { LanguageInfo } from "~/lib/monaco/types";
 
 export default defineNuxtComponent({
   data: () => ({
@@ -12,6 +13,9 @@ export default defineNuxtComponent({
     errorMessage: '',
     defaultExpires: 1,
     isBurn: false,
+    loadedLanguages: [] as LanguageInfo[],
+    detectedLanguage: '' as string,
+    currentLanguage: null as string | null,
   }),
   async mounted() {
     this.isBurn = useRoute().query.burn === '1';
@@ -47,10 +51,10 @@ export default defineNuxtComponent({
       const res = await (await this.getApi()).post('create', {
         ...(expires ? { expires } : {}),
         content: encrypted,
+        language: this.currentLanguage,
         burn_after_reading: burnAfterReading,
       });
-      // window.location.href = `/q/{id}#{secret}<?burn>`;
-      this.$router.push('/q/' + res.data.id + (burnAfterReading ? '?burn=1' : '') + '#' + secret);
+      this.$router.push(`/q/${res.data.id}?new=1${burnAfterReading ? '&burn=1' : ''}#${secret}`);
     },
     async duplicateD() {
       if (!this.content) return this.showError('No content to duplicate');
@@ -80,6 +84,21 @@ export default defineNuxtComponent({
         baseURL: this.configData.baseURL,
       })
       return this.api;
-    }
+    },
+    download() {
+      if (!this.content) return this.showError('No content to download');
+      const lang = this.currentLanguage || this.detectedLanguage;
+      const info = this.loadedLanguages.find(l => l.id === lang) || { mimeTypes: ['text/plain'], extensions: ['.txt'] };
+      const ext = info.extensions[0];
+      const mime = info.mimeTypes[0];
+      const random = Math.random().toString(36).substring(2);
+      const blob = new Blob([this.content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `not-th.re_${random}${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    },
   }
 })

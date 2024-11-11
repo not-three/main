@@ -7,6 +7,14 @@
     ].join('\n')"
     :to="configData.pullRequest"
   />
+  <share-overview
+    :visible="isNew"
+    :loaded-languages="loadedLanguages"
+    :detected-language="detectedLanguage"
+    :current-language="currentLanguage"
+    :config="configData"
+    @close="isNew = false"
+  />
   <yes-no
     :visible="errorVisible"
     title="Error"
@@ -28,18 +36,27 @@
     :expires="expires"
     :default-expires="defaultExpires"
     :burnt="burnt"
+    :loaded-languages="loadedLanguages"
+    :detected-language="detectedLanguage"
+    :current-language="currentLanguage"
     @new="newD"
     @save="saveD"
     @duplicate="duplicateD"
+    @set-language="currentLanguage = $event"
+    @download="download"
+    @share-overview="isNew = true"
     no-save
   />
   <editor
     v-if="isReady"
     v-model="content"
+    :forced-language="currentLanguage"
     @save="saveD"
     @duplicate="duplicateD"
     @new="newD"
     @loaded="loading = false"
+    @loaded-languages="loadedLanguages = $event"
+    @language-detected="detectedLanguage = $event"
     readonly
   />
 </template>
@@ -54,9 +71,16 @@ export default defineNuxtComponent({
     decryptURL: '',
     expires: null,
     burnt: false,
+    isNew: false,
   }),
   mounted() {
     if (!this.isBurn) this.doInit();
+    const url = new URL(location.href);
+    if (url.searchParams.has('new')) {
+      this.isNew = localStorage.getItem('showShareOnNewAlways') !== 'false';
+      url.searchParams.delete('new');
+      window.history.replaceState({}, '', url.toString());
+    }
   },
   methods: {
     async doInit() {
@@ -69,7 +93,8 @@ export default defineNuxtComponent({
         this.content = CryptoJS.AES.decrypt(res.data.content, secret).toString(CryptoJS.enc.Utf8);
         this.isReady = true;
         this.expires = res.data.expires;
-        this.burnt = res.data.burnt;
+        this.burnt = !!res.data.burnt;
+        this.currentLanguage = res.data.language;
       } catch (e) {
         console.error(e);
         this.$router.push('/?e=404');

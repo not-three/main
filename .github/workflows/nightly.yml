@@ -26,6 +26,17 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install pnpm
+        run: npm install -g pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Prebuild static files
+        run: pnpm generate && mv .output .output-prebuild
+
       - uses: mr-smithers-excellent/docker-build-push@v6
         id: docker_build
         with:
