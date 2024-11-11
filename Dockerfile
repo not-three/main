@@ -15,7 +15,7 @@ RUN pnpm build
 RUN cp -rL .output /app/SERVER_OUTPUT
 
 RUN test -d .output-prebuilt || pnpm generate
-RUN test -d .output-prebuilt && rm .output && mv .output-prebuilt .output
+RUN test -d .output-prebuilt && rm .output && mv .output-prebuilt .output || true
 RUN cp -rL .output/public /app/CLIENT_OUTPUT
 
 ### Production Image
