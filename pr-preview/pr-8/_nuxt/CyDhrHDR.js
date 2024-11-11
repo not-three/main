@@ -1,0 +1,1 @@
+import{_ as s,c as t,r as o,o as c}from"./BVwDIZFG.js";const r={},a={class:"base-container"};function n(e,_){return c(),t("div",a,[o(e.$slots,"default")])}const d=s(r,[["render",n]]);export{d as default};
