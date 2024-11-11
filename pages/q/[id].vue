@@ -7,6 +7,14 @@
     ].join('\n')"
     :to="configData.pullRequest"
   />
+  <share-overview
+    :visible="isNew"
+    :loaded-languages="loadedLanguages"
+    :detected-language="detectedLanguage"
+    :current-language="currentLanguage"
+    :config="configData"
+    @close="isNew = false"
+  />
   <yes-no
     :visible="errorVisible"
     title="Error"
@@ -36,6 +44,7 @@
     @duplicate="duplicateD"
     @set-language="currentLanguage = $event"
     @download="download"
+    @share-overview="isNew = true"
     no-save
   />
   <editor
@@ -62,9 +71,16 @@ export default defineNuxtComponent({
     decryptURL: '',
     expires: null,
     burnt: false,
+    isNew: false,
   }),
   mounted() {
     if (!this.isBurn) this.doInit();
+    const url = new URL(location.href);
+    if (url.searchParams.has('new')) {
+      this.isNew = localStorage.getItem('showShareOnNewAlways') !== 'false';
+      url.searchParams.delete('new');
+      window.history.replaceState({}, '', url.toString());
+    }
   },
   methods: {
     async doInit() {

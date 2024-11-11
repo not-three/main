@@ -70,7 +70,7 @@
 
 <script lang="ts" setup>
 import type { LanguageInfo } from '~/lib/monaco/types';
-import { generateShare, type ShareUrlData } from '~/lib/share';
+import { generateShare, WARNING, type ShareUrlData } from '~/lib/share';
 
 const props = defineProps<{
   config: any;
@@ -148,11 +148,7 @@ const showShareDialogAlways = ref(localStorage.getItem('showShareDialogAlways') 
 const lastEvent = ref('')
 const visible = ref(0)
 const route = useRoute()
-const warning = [
-  'With this url the server will be able to decrypt your data.',
-  'This has it\'s benefits, and we do not store the data, but',
-  'it\'s still a risk. Are you sure you want to share this url?',
-].join(' ')
+const warning = WARNING
 
 const entries = computed(() => ([
   {
@@ -168,15 +164,18 @@ const entries = computed(() => ([
   },
   {
     name: 'share',
-    entries: Object.keys(shareUrls.value).reduce((acc, cat) => {
-      const category = shareUrls.value[cat as keyof ShareUrlData];
-      const suffix = cat === 'ssd' ? ' (Server-Side Decryption)' : '';
-      acc.push(...Object.keys(category).map(
-        (key) => [`share-${cat}-${key}`, key + suffix] as [string, string])
-      );
-      console.log(acc)
-      return acc;
-    }, [] as [string, string][]).sort((a, b) => a[1].localeCompare(b[1])),
+    entries: [
+      ['share-overview', 'Overview'],
+      ...Object.keys(shareUrls.value).reduce((acc, cat) => {
+        const category = shareUrls.value[cat as keyof ShareUrlData];
+        const suffix = cat === 'ssd' ? ' (Server-Side Decryption)' : '';
+        acc.push(...Object.keys(category).map(
+          (key) => [`share-${cat}-${key}`, key + suffix] as [string, string])
+        );
+        console.log(acc)
+        return acc;
+      }, [] as [string, string][]).sort((a, b) => a[1].localeCompare(b[1])),
+    ] as [string, string][],
     disabled: route.params.id === undefined || props.burnt,
   },
   {
@@ -189,7 +188,7 @@ const entries = computed(() => ([
   }
 ]))
 
-const emit = defineEmits(['save', 'duplicate', 'new', 'set-language', 'download'])
+const emit = defineEmits(['save', 'duplicate', 'new', 'set-language', 'download', 'share-overview'])
 
 const currLang = computed({
   get: () => {
@@ -215,7 +214,7 @@ function copyDecrypted() {
 }
 
 function handle(entry: string) {
-  if (entry.startsWith('share-')) {
+  if (entry.startsWith('share-') && entry !== 'share-overview') {
     const split = entry.split('-');
     const cat = split[1];
     const key = split.slice(2).join('-');
@@ -253,7 +252,7 @@ function handle(entry: string) {
       visible.value = 2
       break
     default:
-      if (!['save', 'duplicate', 'new', 'download'].includes(entry)) throw new Error('Invalid entry')
+      if (!['save', 'duplicate', 'new', 'download', 'share-overview'].includes(entry)) throw new Error('Invalid entry')
       emit(entry as any);
   }
   lastEvent.value = entry

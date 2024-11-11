@@ -9,6 +9,12 @@ export type ShareUrlData = {
   }
 }
 
+export const WARNING = [
+  'With this url the server will be able to decrypt your data.',
+  'This has it\'s benefits, and we do not store the data, but',
+  'it\'s still a risk. Are you sure you want to share this url?',
+].join(' ');
+
 export function generateShare(baseURL: string, uiURL: string, id: string, extension: string): ShareUrlData {
   if (baseURL.startsWith('/')) baseURL = location.origin + baseURL;
   if (!baseURL.endsWith('/')) baseURL += '/';

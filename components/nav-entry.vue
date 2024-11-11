@@ -17,7 +17,7 @@
               v-for="entry in entries"
               :key="Array.isArray(entry) ? entry[0] : entry"
               @click="Array.isArray(entry) ? doEmit(entry[0]) : doEmit(entry)"
-              class="w-full text-left whitespace-nowrap bg-white/5 my-1 px-2 py-1"
+              class="w-full text-left whitespace-nowrap bg-white/5 my-1 px-2 py-1 hover:bg-white/10 transition-colors"
             >
             <span v-if="Array.isArray(entry)">
               {{ entry[1] }}

@@ -54,8 +54,7 @@ export default defineNuxtComponent({
         language: this.currentLanguage,
         burn_after_reading: burnAfterReading,
       });
-      // window.location.href = `/q/{id}#{secret}<?burn>`;
-      this.$router.push('/q/' + res.data.id + (burnAfterReading ? '?burn=1' : '') + '#' + secret);
+      this.$router.push(`/q/${res.data.id}?new=1${burnAfterReading ? '&burn=1' : ''}#${secret}`);
     },
     async duplicateD() {
       if (!this.content) return this.showError('No content to duplicate');

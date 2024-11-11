@@ -85,11 +85,15 @@ function handleKeydown(event: KeyboardEvent) {
     case 'y':
     case 'Y':
       emits('yes')
+      event.preventDefault()
+      event.stopImmediatePropagation()
       break
     case 'n':
     case 'N':
     case 'Escape':
       emits('no')
+      event.preventDefault()
+      event.stopImmediatePropagation()
       break
   }
 }
