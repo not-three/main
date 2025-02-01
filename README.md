@@ -73,6 +73,8 @@ go to `Tools` -> `Edit Settings` and update these values:
 }
 ```
 
+Dont forget to save the settings, by clicking on `File` -> `Save` (or by pressing `ctrl` + `s`).
+
 ### Minimal
 
 The minimal deployment includes both the API and the UI.
