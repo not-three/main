@@ -50,6 +50,7 @@ services:
     restart: unless-stopped
     environment:
       CORS_ENABLED: true
+      LIMITS_DISABLED: true
       INSTANCE_PASSWORD: MySecretPassword
     ports:
       - 3000:3000
