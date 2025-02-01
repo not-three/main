@@ -1,33 +1,98 @@
-version: '3'
+x-restart: &restart
+  restart: unless-stopped
+
+x-api-parent: &api-parent
+  image: ghcr.io/not-three/api:latest
+  <<: *restart
+  depends_on:
+    db:
+      condition: service_healthy
+  environment: &env
+    # If you want to edit the environment variables, you can do so here.
+    DATABASE_MODE: pg
+    DATABASE_HOST: db
+    DATABASE_USERNAME: db
+    DATABASE_PASSWORD: db
+    DATABASE_NAME: db
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:3000/info"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+x-api: &api
+  <<: *api-parent
+  environment:
+    # Do not edit the environment variables here. Edit them in the parent.
+    <<: *env
+    BEHIND_PROXY: true
+    CHILD_INSTANCE: true
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+    - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+    - "traefik.http.routers.api.entrypoints=http"
+    - "traefik.http.routers.api.middlewares=api-stripprefix"
+    - "traefik.http.services.api.loadbalancer.server.port=4000"
+    - "traefik.http.services.api.loadbalancer.sticky=true"
+
+x-ui: &ui
+  image: ghcr.io/not-three/ui:latest
+  <<: *restart
+  environment:
+    TERMS_OF_SERVICE_URL: https://example.com
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.ui.rule=PathPrefix(`/`)"
+    - "traefik.http.routers.ui.entrypoints=http"
+    - "traefik.http.services.ui.loadbalancer.server.port=3000"
+    - "traefik.http.services.ui.loadbalancer.sticky=true"
+
+###
 
 services:
-  postgres:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.http.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  api-parent: *api-parent
+
+  api-1: *api
+  api-2: *api
+  api-3: *api
+  api-4: *api
+  api-5: *api
+
+  ui-1: *ui
+  ui-2: *ui
+
+  db:
     image: postgres:14.5
+    <<: *restart
     environment:
       POSTGRES_PASSWORD: db
       POSTGRES_USER: db
       POSTGRES_DB: db
     volumes:
       - db:/var/lib/postgresql/data
-  
-  app:
-    image: ghcr.io/not-three/main:latest
-    depends_on:
-      - postgres
-    ports:
-      - 3000:3000
-    environment:
-      DB_HOST: postgres
-      # DB_USER: db
-      # DB_PASSWORD: db
-      # DB_NAME: db
-      # DB_PORT: 5432
-      # IP_HEADER: CF-Connecting-IP # default is X-Real-IP, can be set to 'false' to use the remote address
-      # MAX_NOTES_PER_HOUR: 200
-      # EXPIRERY: 2592000 # 30 days
-      # STATUS_KEY: something random to protect the status endpoint
-      # CLEANUP_INTERVAL: 900000 # 15 minutes
-    
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   db:

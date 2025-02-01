@@ -1,50 +1,109 @@
-# This example is for a docker swarm, with traefik as a
-# reverse proxy deployed as a global service. In theorey
-# this is what we have in production, but slightly modified.
+x-restart: &restart
+  condition: any
 
-version: '3.8'
+x-instances:
+  api: &api-instances 5
+  ui: &ui-instances 2
+
+x-env: &env
+  environment:
+    BEHIND_PROXY: true
+    DATABASE_MODE: pg
+    DATABASE_HOST: db
+    DATABASE_USERNAME: db
+    DATABASE_PASSWORD: db
+    DATABASE_NAME: db
+
+x-ui: &ui
+  environment:
+    API_URL: http://api/info
+    TERMS_OF_SERVICE_URL: https://example.com
+
+###
 
 services:
-  postgres:
-    image: kartoza/postgis
+  traefik:
+    image: traefik:v2.10
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.http.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    deploy:
+      restart_policy: *restart
+      placement:
+        constraints:
+          - node.role == manager
+
+  api_parent:
+    image: ghcr.io/not-three/api:latest
+    <<: *env
+    deploy:
+      restart_policy: *restart
+      replicas: 1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/info"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  api_child:
+    image: ghcr.io/not-three/api:latest
+    <<: *env
+    deploy:
+      restart_policy: *restart
+      replicas: *api-instances
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+        - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+        - "traefik.http.routers.api.entrypoints=http"
+        - "traefik.http.services.api.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/info"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ui:
+    image: ghcr.io/not-three/ui:latest
+    <<: *ui
+    deploy:
+      restart_policy: *restart
+      replicas: *ui-instances
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.ui.rule=PathPrefix(`/`)"
+        - "traefik.http.routers.ui.entrypoints=http"
+        - "traefik.http.services.ui.loadbalancer.server.port=4000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:14.5
     environment:
       POSTGRES_PASSWORD: db
       POSTGRES_USER: db
       POSTGRES_DB: db
-      ALLOW_IP_RANGE: 0.0.0.0/0
     volumes:
-      - <your swarm shared volume>:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     deploy:
-      replicas: 1
-  
-  app:
-    image: ghcr.io/not-three/main
-    depends_on:
-      - postgres
-    networks:
-      - default
-      - <your traefik network>
-    environment:
-      DB_HOST: postgres
-      MAX_LENGTH: 1000000
-      STATUS_KEY: random-password
-    deploy:
-      replicas: 1
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.not-three.rule=Host(`api.example.com`)"
-        - "traefik.http.routers.not-three.entrypoints=https"
-        - "traefik.http.routers.not-three.middlewares=not-three"
-        - "traefik.http.routers.not-three.tls.certresolver=default"
-        - "traefik.http.services.not-three.loadbalancer.server.port=3000"
-        - "traefik.http.middlewares.not-three-prefix.addprefix.prefix=/api"
-        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolallowmethods=*"
-        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolallowheaders=*"
-        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolalloworiginlist=*"
-        - "traefik.http.middlewares.not-three-cors.headers.accesscontrolmaxage=100"
-        - "traefik.http.middlewares.not-three-cors.headers.addvaryheader=true"
-        - "traefik.http.middlewares.not-three.chain.middlewares=not-three-prefix,not-three-cors"
+      restart_policy: *restart
+      placement:
+        constraints:
+          - node.role == manager
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-networks:
-  <your traefik network>:
-    external: true
+volumes:
+  db:
