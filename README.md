@@ -180,7 +180,7 @@ while the API is hosted on [api.not-th.re](https://api.not-th.re).
 The static site can then be configured by editing the `config.json` file.
 
 ```json
-{ "baseURL": "https://api.not-th.re/", "terms": "https://scolasti.co/go/privacy" }
+{ "baseURL": "https://api.not-th.re/", "termsURL": "https://scolasti.co/go/privacy" }
 ```
 
 You can download the client bundle from one of the following sources:
