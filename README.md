@@ -53,7 +53,7 @@ services:
       LIMITS_DISABLED: true
       INSTANCE_PASSWORD: MySecretPassword
     ports:
-      - 3000:3000
+      - 4000:4000
     volumes:
       - db:/data/db
 
@@ -67,7 +67,7 @@ go to `Tools` -> `Edit Settings` and update these values:
 ```json
 {
   "customServer": {
-    "url": "http://<ip-of-the-server>:3000/",
+    "url": "http://<ip-of-the-server>:4000/",
     "password": "MySecretPassword"
   }
 }
