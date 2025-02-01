@@ -3,10 +3,10 @@
 [![license GNU AGPLv3](https://img.shields.io/badge/license-GNU%20AGPLv3-blue)](https://github.com/not-three/main/blob/main/LICENSE)
 [![gitHub issues](https://img.shields.io/github/issues/not-three/main)](https://github.com/not-three/main/issues)
 [![ui releases](https://img.shields.io/github/v/release/not-three/ui?label=ui%20version)](https://github.com/not-three/ui/releases)
-[![build ui Nightly](https://img.shields.io/github/actions/workflow/status/not-three/ui/nightly.yml?label=build%20ui%20nightly)](https://github.com/not-three/main/actions/workflows/nightly.yml)
+[![build ui Nightly](https://img.shields.io/github/actions/workflow/status/not-three/ui/nightly.yml?label=build%20ui%20nightly)](https://github.com/not-three/ui/actions/workflows/nightly.yml)
 [![ui commits](https://img.shields.io/github/last-commit/not-three/ui?label=last%20ui%20commit)](https://github.com/not-three/ui/commits/main)
 [![api releases](https://img.shields.io/github/v/release/not-three/api?label=api%20version)](https://github.com/not-three/api/releases)
-[![build api Nightly](https://img.shields.io/github/actions/workflow/status/not-three/api/nightly.yml?label=build%20api%20nightly)](https://github.com/not-three/main/actions/workflows/nightly.yml)
+[![build api Nightly](https://img.shields.io/github/actions/workflow/status/not-three/api/nightly.yml?label=build%20api%20nightly)](https://github.com/not-three/api/actions/workflows/nightly.yml)
 [![api commits](https://img.shields.io/github/last-commit/not-three/api?label=last%20api%20commit)](https://github.com/not-three/api/commits/main)
 
 !3 (spoken not three, derived from the leet speak word not3) is a simple
