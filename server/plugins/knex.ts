@@ -7,6 +7,16 @@ export class Database {
   private db: KnexInstance;
 
   constructor() {
+    console.warn([
+      "--------------------------------------",
+      "UPGRADE AVAILABLE!",
+      "!3 2.0 Released with breaking changes!",
+      "Please visit our repo for more information on how to redeploy:",
+      "https://github.com/not-three/main",
+      "--------------------------------------",
+      "The UI and API have from now on theyr own containers!",
+      "--------------------------------------",
+    ]);
     if (process.env.SKIP_DB) this.db = null as any
     else if (process.env.USE_SQLITE) this.db = knex({
         client: 'sqlite3',
