@@ -38,7 +38,7 @@ fi
 
 cat $url_or_file.bin
 
-rm $url_or_file.bin $url_or_file.iv $url_or_file.raw $url_or_file.decrypted $url_or_file.hash
+rm $url_or_file.bin $url_or_file.iv $url_or_file.raw $url_or_file.decrypted $url_or_file.hash $url_or_file.decoded
 if [ -f not3.enc ]; then
   rm not3.enc
 fi
