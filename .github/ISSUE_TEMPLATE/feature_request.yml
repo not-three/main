@@ -1,0 +1,43 @@
+name: "Feature Request"
+description: "Suggest a new feature"
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: project
+    attributes:
+      label: "Which project is this feature request for?"
+      options:
+        - "@not3/api"
+        - "@not3/sdk"
+        - "@not3/ui"
+      multiple: false
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: "Feature description"
+      description: "A clear and concise description of the feature you want."
+      placeholder: "Feature description..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: "What problem does this solve?"
+      description: "Explain why this feature is needed."
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: "Proposed solution"
+      description: "If you have a suggestion for how to implement this, describe it here."
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: "Additional context"
+      description: "Any other relevant information or screenshots?"

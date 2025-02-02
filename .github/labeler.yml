@@ -1,0 +1,6 @@
+api:
+  - '@not3/api'
+sdk:
+  - '@not3/sdk'
+ui:
+  - '@not3/ui'
