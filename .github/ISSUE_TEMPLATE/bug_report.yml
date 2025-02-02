@@ -8,9 +8,9 @@ body:
     attributes:
       label: "Which project is this issue related to?"
       options:
+        - "@not3/ui"
         - "@not3/api"
         - "@not3/sdk"
-        - "@not3/ui"
       multiple: false
     validations:
       required: true
