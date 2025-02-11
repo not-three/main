@@ -19,7 +19,7 @@
 [![cli releases](https://img.shields.io/github/v/release/not-three/cli?label=cli%20version)](https://github.com/not-three/cli/releases)
 [![cli npm package](https://img.shields.io/npm/v/%40not3%2Fcli)](https://www.npmjs.com/package/@not3/cli)
 [![build cli Nightly](https://img.shields.io/github/actions/workflow/status/not-three/cli/nightly.yml?label=build%20cli%20nightly)](https://github.com/not-three/cli/actions/workflows/nightly.yml)
-[![cli commits](https://img.shields.io/github/last-commit/not-three/cli?label=last%20sdk%20commit)](https://github.com/not-three/cli/commits/main)
+[![cli commits](https://img.shields.io/github/last-commit/not-three/cli?label=last%20cli%20commit)](https://github.com/not-three/cli/commits/main)
 
 !3 (spoken not three, derived from the leet speak word not3) is a simple
 paste sharing platform similar to other solutions like hastebin or pastebin.
