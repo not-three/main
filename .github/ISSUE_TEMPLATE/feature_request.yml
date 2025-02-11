@@ -10,6 +10,7 @@ body:
       options:
         - "@not3/ui"
         - "@not3/api"
+        - "@not3/cli"
         - "@not3/sdk"
       multiple: false
     validations:
