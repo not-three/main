@@ -53,7 +53,7 @@ We also provide a cli tool to interact with the API.
 npm install -g @not3/cli
 ```
 
-```bash
+```log
 $ not3 --help
 Usage: not3 [options] [command]
 
