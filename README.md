@@ -45,6 +45,36 @@ and usage of the monaco editor.
 - No tracking
 - No ads
 
+## Cli
+
+We also provide a cli tool to interact with the API.
+
+```bash
+npm install -g @not3/cli
+```
+
+```bash
+$ not3 --help
+Usage: not3 [options] [command]
+
+Options:
+  -V, --version                              output the version number
+  -h, --help                                 display help for command
+
+Commands:
+  license                                    Show information about the license of the software
+  decrypt [options] <seed>                   Decrypt something
+  encrypt [options] [input...]               Encrypt something, if no input is provided, will read from stdin
+  download|d [options] <id> <seed> <output>  Download a file and decrypt it
+  upload|u [options] <input>                 Upload a file and encrypt it
+  query|q [options] <id> <seed>              Decrypt and show a note from the server
+  save|s [options] [content...]              Encrypt and save a note on the server
+  seed                                       Generate a new encryption seed
+  info [options]                             Show meta information about the api
+  stats [options]                            Show usage statistics of the server
+  help [command]                             display help for command
+```
+
 ## Deployment
 
 The simplest way to use !3 is to visit our hosted instance at [https://not-th.re](https://not-th.re).
