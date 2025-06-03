@@ -11,15 +11,15 @@
 [![build api Nightly](https://img.shields.io/github/actions/workflow/status/not-three/api/nightly.yml?label=build%20api%20nightly)](https://github.com/not-three/api/actions/workflows/nightly.yml)
 [![api commits](https://img.shields.io/github/last-commit/not-three/api?label=last%20api%20commit)](https://github.com/not-three/api/commits/main)
 
-[![sdk releases](https://img.shields.io/github/v/release/not-three/sdk?label=sdk%20version)](https://github.com/not-three/sdk/releases)
-[![sdk npm package](https://img.shields.io/npm/v/%40not3%2Fsdk)](https://www.npmjs.com/package/@not3/sdk)
-[![build sdk Nightly](https://img.shields.io/github/actions/workflow/status/not-three/sdk/nightly.yml?label=build%20sdk%20nightly)](https://github.com/not-three/sdk/actions/workflows/nightly.yml)
-[![sdk commits](https://img.shields.io/github/last-commit/not-three/sdk?label=last%20sdk%20commit)](https://github.com/not-three/sdk/commits/main)
-
 [![cli releases](https://img.shields.io/github/v/release/not-three/cli?label=cli%20version)](https://github.com/not-three/cli/releases)
 [![cli npm package](https://img.shields.io/npm/v/%40not3%2Fcli)](https://www.npmjs.com/package/@not3/cli)
 [![build cli Nightly](https://img.shields.io/github/actions/workflow/status/not-three/cli/nightly.yml?label=build%20cli%20nightly)](https://github.com/not-three/cli/actions/workflows/nightly.yml)
 [![cli commits](https://img.shields.io/github/last-commit/not-three/cli?label=last%20cli%20commit)](https://github.com/not-three/cli/commits/main)
+
+[![sdk releases](https://img.shields.io/github/v/release/not-three/sdk?label=sdk%20version)](https://github.com/not-three/sdk/releases)
+[![sdk npm package](https://img.shields.io/npm/v/%40not3%2Fsdk)](https://www.npmjs.com/package/@not3/sdk)
+[![build sdk Nightly](https://img.shields.io/github/actions/workflow/status/not-three/sdk/nightly.yml?label=build%20sdk%20nightly)](https://github.com/not-three/sdk/actions/workflows/nightly.yml)
+[![sdk commits](https://img.shields.io/github/last-commit/not-three/sdk?label=last%20sdk%20commit)](https://github.com/not-three/sdk/commits/main)
 
 !3 (spoken not three, derived from the leet speak word not3) is a simple
 paste sharing platform similar to other solutions like hastebin or pastebin.
