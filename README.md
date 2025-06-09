@@ -299,3 +299,27 @@ Permissions of this strongest copyleft license are conditioned on making availab
 *Information provided by [https://choosealicense.com/licenses/agpl-3.0/](https://choosealicense.com/licenses/agpl-3.0/)*
 
 **This information is provided for general understanding and is not legal advice.**
+
+## Contributing
+
+The !3 project is open source and welcomes contributions. It is structured across multiple repositories, each serving a specific purpose:
+
+- [main](https://github.com/not-three/main) - Contains deployment documentation, shell scripts, and overall project setup.
+- [ui](https://github.com/not-three/ui) - The web interface for !3, built with Nuxt (Vue) and TypeScript.
+- [api](https://github.com/not-three/api) - The backend API, written in TypeScript using the NestJS framework.
+- [cli](https://github.com/not-three/cli) - Command-line interface for !3, built with TypeScript and the NestJS commander framework.
+- [sdk](https://github.com/not-three/sdk) - A TypeScript SDK usable in both browser and Node.js environments.
+- [draw](https://github.com/not-three/draw) - A wrapper for Excalidraw using React and TypeScript, used for visual/paste sharing.
+
+> Note: The main repository is the central place for reporting bugs, submitting suggestions, and discussing ideas.
+> It is the only repository in the organization with issues enabled.
+
+### Legal Notice for Contributors
+
+The project is licensed under the GNU Affero General Public License (AGPL). If you contribute to this project:
+
+- Your contributions will be automatically licensed under the AGPL.
+- If you later reuse your contributions in another project or deploy a modified version of the software, you are responsible for complying with the AGPL's terms.
+- In particular, if you make the software available over a network (e.g., by hosting it), you are legally required to provide the corresponding source code to users of your deployment.
+
+By contributing, you acknowledge and accept these terms. If in doubt, seek legal advice before submitting a contribution.
