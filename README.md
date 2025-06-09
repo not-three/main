@@ -21,6 +21,10 @@
 [![build sdk Nightly](https://img.shields.io/github/actions/workflow/status/not-three/sdk/nightly.yml?label=build%20sdk%20nightly)](https://github.com/not-three/sdk/actions/workflows/nightly.yml)
 [![sdk commits](https://img.shields.io/github/last-commit/not-three/sdk?label=last%20sdk%20commit)](https://github.com/not-three/sdk/commits/main)
 
+[![draw releases](https://img.shields.io/github/v/release/not-three/draw?label=draw%20version)](https://github.com/not-three/draw/releases)
+[![build draw Nightly](https://img.shields.io/github/actions/workflow/status/not-three/draw/nightly.yml?label=build%20draw%20nightly)](https://github.com/not-three/draw/actions/workflows/nightly.yml)
+[![draw commits](https://img.shields.io/github/last-commit/not-three/draw?label=last%20draw%20commit)](https://github.com/not-three/draw/commits/main)
+
 !3 (spoken not three, derived from the leet speak word not3) is a simple
 paste sharing platform similar to other solutions like hastebin or pastebin.
 
