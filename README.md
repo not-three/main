@@ -121,6 +121,12 @@ go to `Tools` -> `Edit Settings` and update these values:
 
 Dont forget to save the settings, by clicking on `File` -> `Save` (or by pressing `ctrl` + `s`).
 
+> 💡 Note: If you're using your own private instance and share a URL, the encrypted link will
+> include both the encryption key and the address of your private server. When someone opens
+> the link and they haven't set your server as their primary one, they'll be notified and asked
+> to confirm access to data from an external server. If they agree, the data will then be loaded
+> securely from your instance.
+
 ### Minimal
 
 The minimal deployment includes the API and the UIs.
