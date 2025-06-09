@@ -53,6 +53,23 @@ x-ui: &ui
     - "traefik.http.services.ui.loadbalancer.server.port=3000"
     - "traefik.http.services.ui.loadbalancer.sticky=true"
 
+x-draw: &draw
+  image: ghcr.io/not-three/draw:latest
+  <<: *restart
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:80/"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.middlewares.draw-stripprefix.stripprefix.prefixes=/api/draw/"
+    - "traefik.http.routers.draw.rule=PathPrefix(`/api/draw/`)"
+    - "traefik.http.routers.draw.entrypoints=http"
+    - "traefik.http.routers.draw.middlewares=draw-stripprefix"
+    - "traefik.http.services.draw.loadbalancer.server.port=80"
+    - "traefik.http.services.draw.loadbalancer.sticky=true"
+
 ###
 
 services:
@@ -78,6 +95,9 @@ services:
 
   ui-1: *ui
   ui-2: *ui
+
+  draw-1: *draw
+  draw-2: *draw
 
   db:
     image: postgres:14.5

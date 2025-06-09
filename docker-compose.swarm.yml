@@ -4,6 +4,7 @@ x-restart: &restart
 x-instances:
   api: &api-instances 5
   ui: &ui-instances 2
+  draw: &draw-instances 2
 
 x-env: &env
   environment:
@@ -16,7 +17,8 @@ x-env: &env
 
 x-ui: &ui
   environment:
-    API_URL: http://api/info
+    API_URL: http://<domain>/api
+    DRAW_URL: http://<domain/api/draw/
     TERMS_OF_SERVICE_URL: https://example.com
 
 ###
@@ -82,6 +84,22 @@ services:
         - "traefik.http.services.ui.loadbalancer.server.port=4000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  draw:
+    image: ghcr.io/not-three/draw:latest
+    deploy:
+      restart_policy: *restart
+      replicas: *draw-instances
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.draw.rule=PathPrefix(`/`)"
+        - "traefik.http.routers.draw.entrypoints=http"
+        - "traefik.http.services.draw.loadbalancer.server.port=80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
       interval: 30s
       timeout: 10s
       retries: 3
