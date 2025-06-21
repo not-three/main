@@ -6,3 +6,5 @@ ui:
   - '@not3/ui'
 draw:
   - '@not3/draw'
+cli:
+  - '@not3/cli'
