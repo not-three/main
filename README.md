@@ -21,6 +21,10 @@
 [![build sdk Nightly](https://img.shields.io/github/actions/workflow/status/not-three/sdk/nightly.yml?label=build%20sdk%20nightly)](https://github.com/not-three/sdk/actions/workflows/nightly.yml)
 [![sdk commits](https://img.shields.io/github/last-commit/not-three/sdk?label=last%20sdk%20commit)](https://github.com/not-three/sdk/commits/main)
 
+[![draw releases](https://img.shields.io/github/v/release/not-three/draw?label=draw%20version)](https://github.com/not-three/draw/releases)
+[![build draw Nightly](https://img.shields.io/github/actions/workflow/status/not-three/draw/nightly.yml?label=build%20draw%20nightly)](https://github.com/not-three/draw/actions/workflows/nightly.yml)
+[![draw commits](https://img.shields.io/github/last-commit/not-three/draw?label=last%20draw%20commit)](https://github.com/not-three/draw/commits/main)
+
 !3 (spoken not three, derived from the leet speak word not3) is a simple
 paste sharing platform similar to other solutions like hastebin or pastebin.
 
@@ -34,9 +38,9 @@ and usage of the monaco editor.
 - Monaco editor
 - Syntax highlighting
 - Dark mode
-- **_New_**: **File transfers**
-- **_New_**: **Connect your private instance with the public UI**
-- **_Planned_**: **Excalidraw integration**
+- File transfers
+- Connect your private instance with the public UI
+- **_New_**: **Excalidraw integration**
 - **_Planned_**: **Peer 2 Peer sessions**
 - **_Planned_**: **Note Bundles**
 - **_Planned_**: **HTML Previewer**
@@ -73,6 +77,12 @@ Commands:
   info [options]                             Show meta information about the api
   stats [options]                            Show usage statistics of the server
   help [command]                             display help for command
+```
+
+Or use it with docker:
+
+```bash
+docker run --rm -it -v "$(pwd):/data" ghcr.io/not-three/cli --help
 ```
 
 ## Deployment
@@ -115,9 +125,15 @@ go to `Tools` -> `Edit Settings` and update these values:
 
 Dont forget to save the settings, by clicking on `File` -> `Save` (or by pressing `ctrl` + `s`).
 
+> 💡 Note: If you're using your own private instance and share a URL, the encrypted link will
+> include both the encryption key and the address of your private server. When someone opens
+> the link and they haven't set your server as their primary one, they'll be notified and asked
+> to confirm access to data from an external server. If they agree, the data will then be loaded
+> securely from your instance.
+
 ### Minimal
 
-The minimal deployment includes both the API and the UI.
+The minimal deployment includes the API and the UIs.
 The UI has the proxy mode enabled, so you only need a single port.
 
 ```yml
@@ -131,6 +147,10 @@ services:
     volumes:
       - db:/data/db
 
+  draw:
+    image: ghcr.io/not-three/draw:latest
+    <<: *restart
+
   ui:
     image: ghcr.io/not-three/ui:latest
     <<: *restart
@@ -138,8 +158,10 @@ services:
       - 4000:4000
     depends_on:
       - api
+      - draw
     environment:
       PROXY_URL: http://api:3000
+      DRAW_PROXY_URL: http://draw:80
 
 volumes:
   db:
@@ -171,6 +193,12 @@ services:
       DATABASE_PASSWORD: db
       DATABASE_NAME: db
 
+  draw:
+    image: ghcr.io/not-three/draw:latest
+    <<: *restart
+    ports:
+      - 4500:80
+
   ui:
     image: ghcr.io/not-three/ui:latest
     <<: *restart
@@ -178,6 +206,7 @@ services:
       - 4000:4000
     environment:
       API_URL: http://localhost:3000
+      DRAW_URL: http://localhost:4500
       TERMS_OF_SERVICE_URL: https://example.com
 
   db:
@@ -220,7 +249,7 @@ while the API is hosted on [api.not-th.re](https://api.not-th.re).
 The static site can then be configured by editing the `config.json` file.
 
 ```json
-{ "baseURL": "https://api.not-th.re/", "termsURL": "https://scolasti.co/go/privacy" }
+{ "baseURL": "https://api.not-th.re/", "drawURL": "https://draw.not-th.re/", "termsURL": "https://scolasti.co/go/privacy" }
 ```
 
 You can download the client bundle from one of the following sources:
@@ -229,12 +258,16 @@ You can download the client bundle from one of the following sources:
 
 All stable versions of the client are available as a github release artifact.
 
-[![download stable gh releases artifacts](https://img.shields.io/badge/download-stable_gh_releases_artifacts-blue)](https://github.com/not-three/ui/releases)
+[![download ui stable gh releases artifacts](https://img.shields.io/badge/download-UI_stable_gh_releases_artifacts-blue)](https://github.com/not-three/ui/releases)
+
+[![download draw stable gh releases artifacts](https://img.shields.io/badge/download-DRAW_stable_gh_releases_artifacts-blue)](https://github.com/not-three/draw/releases)
 
 ### Docker
 
 ```bash
-docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt ghcr.io/not-three/ui:latest -c "cp -r /app/public/ /mnt/public/"
+docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt ghcr.io/not-three/ui:latest -c "cp -r /app/public/ /mnt/ui/"
+
+docker run --rm --entrypoint /bin/sh -v $(pwd):/mnt ghcr.io/not-three/draw:latest -c "cp -r /usr/local/apache2/htdocs/ /mnt/draw/"
 ```
 
 This will copy the public folder to your current working directory.
@@ -243,7 +276,9 @@ This will copy the public folder to your current working directory.
 
 The nightly (unstable) versions of the client are also available as a github action artifacts.
 
-[![download nightly gh actions artifacts](https://img.shields.io/badge/download-nightly_gh_actions_artifacts-red)](https://nightly.link/not-three/ui/workflows/nightly/main/client-bundle)
+[![download ui nightly gh actions artifacts](https://img.shields.io/badge/download-UI_nightly_gh_actions_artifacts-red)](https://nightly.link/not-three/ui/workflows/nightly/main/client-bundle)
+
+[![download draw nightly gh actions artifacts](https://img.shields.io/badge/download-DRAW_nightly_gh_actions_artifacts-red)](https://nightly.link/not-three/draw/workflows/nightly/main/client-bundle)
 
 ## License
 
@@ -268,3 +303,27 @@ Permissions of this strongest copyleft license are conditioned on making availab
 *Information provided by [https://choosealicense.com/licenses/agpl-3.0/](https://choosealicense.com/licenses/agpl-3.0/)*
 
 **This information is provided for general understanding and is not legal advice.**
+
+## Contributing
+
+The !3 project is open source and welcomes contributions. It is structured across multiple repositories, each serving a specific purpose:
+
+- [main](https://github.com/not-three/main) - Contains deployment documentation, shell scripts, and overall project setup.
+- [ui](https://github.com/not-three/ui) - The web interface for !3, built with Nuxt (Vue) and TypeScript.
+- [api](https://github.com/not-three/api) - The backend API, written in TypeScript using the NestJS framework.
+- [cli](https://github.com/not-three/cli) - Command-line interface for !3, built with TypeScript and the NestJS commander framework.
+- [sdk](https://github.com/not-three/sdk) - A TypeScript SDK usable in both browser and Node.js environments.
+- [draw](https://github.com/not-three/draw) - A wrapper for Excalidraw using React and TypeScript, used for visual/paste sharing.
+
+> Note: The main repository is the central place for reporting bugs, submitting suggestions, and discussing ideas.
+> It is the only repository in the organization with issues enabled.
+
+### Legal Notice for Contributors
+
+The project is licensed under the GNU Affero General Public License (AGPL). If you contribute to this project:
+
+- Your contributions will be automatically licensed under the AGPL.
+- If you later reuse your contributions in another project or deploy a modified version of the software, you are responsible for complying with the AGPL's terms.
+- In particular, if you make the software available over a network (e.g., by hosting it), you are legally required to provide the corresponding source code to users of your deployment.
+
+By contributing, you acknowledge and accept these terms. If in doubt, seek legal advice before submitting a contribution.
