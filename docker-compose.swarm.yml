@@ -7,13 +7,12 @@ x-instances:
   draw: &draw-instances 2
 
 x-env: &env
-  environment:
-    BEHIND_PROXY: true
-    DATABASE_MODE: pg
-    DATABASE_HOST: db
-    DATABASE_USERNAME: db
-    DATABASE_PASSWORD: db
-    DATABASE_NAME: db
+  BEHIND_PROXY: true
+  DATABASE_MODE: pg
+  DATABASE_HOST: db
+  DATABASE_USERNAME: db
+  DATABASE_PASSWORD: db
+  DATABASE_NAME: db
 
 x-ui: &ui
   environment:
@@ -43,7 +42,7 @@ services:
 
   api_parent:
     image: ghcr.io/not-three/api:latest
-    <<: *env
+    environment: *env
     deploy:
       restart_policy: *restart
       replicas: 1
@@ -55,7 +54,9 @@ services:
 
   api_child:
     image: ghcr.io/not-three/api:latest
-    <<: *env
+    environment:
+      <<: *env
+      CHILD_INSTANCE: true
     deploy:
       restart_policy: *restart
       replicas: *api-instances
