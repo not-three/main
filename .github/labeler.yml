@@ -4,5 +4,5 @@ sdk:
   - '@not3/sdk'
 ui:
   - '@not3/ui'
-sdk:
-  - '@not3/sdk'
+draw:
+  - '@not3/draw'
