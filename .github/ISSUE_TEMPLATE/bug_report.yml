@@ -12,6 +12,7 @@ body:
         - "@not3/api"
         - "@not3/cli"
         - "@not3/sdk"
+        - "@not3/draw"
       multiple: false
     validations:
       required: true
