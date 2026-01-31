@@ -89,6 +89,16 @@ docker run --rm -it -v "$(pwd):/data" ghcr.io/not-three/cli --help
 
 The simplest way to use !3 is to visit our hosted instance at [https://not-th.re](https://not-th.re).
 
+### ⚠️ Security & SSL Requirement
+
+Because this project relies on the Web Crypto API (`crypto.subtle`) for client-side encryption, the **UI MUST be deployed using SSL/HTTPS**. Browsers do not provide access to the `crypto.subtle` interface if the site is not served in a secure context.
+
+* **UI:** HTTPS is mandatory; the application will not function without it.
+* **API:** While the API can theoretically be deployed without SSL, it is **strongly disadvised**.
+* **Configuration:** The deployment examples provided in this documentation do not include SSL configuration. Users are expected to configure this on their own.
+
+For those using Traefik as a reverse proxy, we recommend referring to the [Traefik Let's Encrypt documentation](https://doc.traefik.io/traefik/https/acme/) for automated certificate management.
+
 ### Micro
 
 The micro deployment does not bring its own UI, but you can use the public UI.
