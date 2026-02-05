@@ -47,7 +47,7 @@ services:
       restart_policy: *restart
       replicas: 1
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/info"]
+      test: ["CMD", "curl", "-f", "http://localhost:4000/info"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -65,9 +65,9 @@ services:
         - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
         - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
         - "traefik.http.routers.api.entrypoints=http"
-        - "traefik.http.services.api.loadbalancer.server.port=3000"
+        - "traefik.http.services.api.loadbalancer.server.port=4000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/info"]
+      test: ["CMD", "curl", "-f", "http://localhost:4000/info"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -82,9 +82,9 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.ui.rule=PathPrefix(`/`)"
         - "traefik.http.routers.ui.entrypoints=http"
-        - "traefik.http.services.ui.loadbalancer.server.port=4000"
+        - "traefik.http.services.ui.loadbalancer.server.port=3000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
       interval: 30s
       timeout: 10s
       retries: 3
