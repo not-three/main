@@ -15,7 +15,7 @@ x-api-parent: &api-parent
     DATABASE_PASSWORD: db
     DATABASE_NAME: db
   healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:3000/info"]
+    test: ["CMD", "curl", "-f", "http://localhost:4000/info"]
     interval: 30s
     timeout: 10s
     retries: 3
@@ -42,7 +42,7 @@ x-ui: &ui
   environment:
     TERMS_OF_SERVICE_URL: https://example.com
   healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:4000/"]
+    test: ["CMD", "curl", "-f", "http://localhost:3000/"]
     interval: 30s
     timeout: 10s
     retries: 3
