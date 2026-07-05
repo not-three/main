@@ -34,32 +34,48 @@ We also provide a cli tool to interact with the API.
 npm install -g @not3/cli
 ```
 
-```log
+```text
 $ not3 --help
-Usage: not3 [options] [command]
+The !3 command line interface, pipe logs or upload files in a jiffy.
 
-Options:
-  -V, --version                              output the version number
-  -h, --help                                 display help for command
+VERSION
+  @not3/cli/3.0.0 linux-x64 node-v22.19.0
 
-Commands:
-  license                                    Show information about the license of the software
-  decrypt [options] <seed>                   Decrypt something
-  encrypt [options] [input...]               Encrypt something, if no input is provided, will read from stdin
-  download|d [options] <id> <seed> <output>  Download a file and decrypt it
-  upload|u [options] <input>                 Upload a file and encrypt it
-  query|q [options] <id> <seed>              Decrypt and show a note from the server
-  save|s [options] [content...]              Encrypt and save a note on the server
-  seed                                       Generate a new encryption seed
-  info [options]                             Show meta information about the api
-  stats [options]                            Show usage statistics of the server
-  help [command]                             display help for command
+USAGE
+  $ not3 [COMMAND]
+
+TOPICS
+  config  Manage the global not3 config file
+  crypto  Local encryption utilities
+  file    Upload and download encrypted files
+  note    Save and fetch encrypted notes
+  server  Server information and statistics
+
+COMMANDS
+  d        Download and decrypt a file
+  g        Fetch and decrypt a note from the server
+  s        Encrypt and save a note on the server
+  u        Encrypt and upload a file
+  license  Show the license of this tool and all bundled dependencies
 ```
 
 Or use it with docker:
 
 ```bash
 docker run --rm -it -v "$(pwd):/data" ghcr.io/not-three/cli --help
+```
+
+Examples:
+
+```bash
+not3 note save "hello world"          # save a note (alias: not3 s)
+journalctl -u app | not3 s            # pipe logs, get a share url on stdout
+not3 note get <id>                    # fetch + decrypt (alias: not3 g)
+not3 file upload video.mp4            # upload a file (alias: not3 u)
+not3 file download <id> out.mp4       # download a file (alias: not3 d)
+not3 crypto encrypt -f x.txt -o x.enc # local encryption
+not3 config set server https://my.api # global defaults (~/.config/not3/config.json)
+not3 config set password hunter2      # bound to the server above, never sent elsewhere
 ```
 
 ## Deployment
