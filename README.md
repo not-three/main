@@ -283,6 +283,15 @@ The nightly (unstable) versions of the client are also available as a github act
 
 [![download draw nightly gh actions artifacts](https://img.shields.io/badge/download-DRAW_nightly_gh_actions_artifacts-red)](https://nightly.link/not-three/draw/workflows/nightly/main/client-bundle)
 
+## Compatiblity
+
+| Version | @not3/sdk@v1 | @not3/sdk@v2 | @not3/sdk@v3 | @not3/sdk@v4 | ... |
+| --- | --- | --- | --- | --- | --- |
+| [main](https://github.com/not-three/main) | 🟢 | 🔴 | ⚪ | ⚪ | ... |
+| [api](https://github.com/not-three/api) | 🔴 | v2 | ⚪ | ⚪ | ... |
+| [ui](https://github.com/not-three/ui) | 🔴 | v2 | ⚪ | ⚪ | ... |
+| [cli](https://github.com/not-three/cli) | 🔴 | v2-3 | ⚪ | ⚪ | ... |
+
 ## License
 
 This project is licensed under the **GNU Affero General Public License v3.0**.
