@@ -1,0 +1,135 @@
+# Advanced !3 deployment for a single docker host:
+# horizontally scaled api/ui/draw instances (via compose replicas,
+# no swarm required), traefik as reverse proxy, postgres as database
+# and valkey as shared cache between all instances.
+
+x-restart: &restart
+  restart: unless-stopped
+
+x-api-parent: &api-parent
+  image: ghcr.io/not-three/api:latest
+  <<: *restart
+  depends_on:
+    db:
+      condition: service_healthy
+    valkey:
+      condition: service_healthy
+  environment: &env
+    # If you want to edit the environment variables, you can do so here.
+    DATABASE_MODE: pg
+    DATABASE_HOST: db
+    DATABASE_USERNAME: db
+    DATABASE_PASSWORD: db
+    DATABASE_NAME: db
+    VALKEY_ENABLED: true
+    VALKEY_HOST: valkey
+    # For serverless databases (e.g. neon.tech) additionally set:
+    # DATABASE_REQUEST_OPTIMIZATION: light # or 'hard', see the README
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:4000/info"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+services:
+  traefik:
+    image: traefik:v3
+    <<: *restart
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.http.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # The parent instance runs the schedulers (cleanup, flush) exactly once.
+  api-parent: *api-parent
+
+  api:
+    <<: *api-parent
+    environment:
+      # Do not edit the environment variables here. Edit them in the parent.
+      <<: *env
+      BEHIND_PROXY: true
+      CHILD_INSTANCE: true
+    deploy:
+      replicas: 5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=http"
+      - "traefik.http.routers.api.middlewares=api-stripprefix"
+      - "traefik.http.services.api.loadbalancer.server.port=4000"
+
+  ui:
+    image: ghcr.io/not-three/ui:latest
+    <<: *restart
+    environment:
+      TERMS_OF_SERVICE_URL: https://example.com
+    deploy:
+      replicas: 2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ui.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.ui.entrypoints=http"
+      - "traefik.http.services.ui.loadbalancer.server.port=3000"
+
+  draw:
+    image: ghcr.io/not-three/draw:latest
+    <<: *restart
+    deploy:
+      replicas: 2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.draw-stripprefix.stripprefix.prefixes=/api/draw/"
+      - "traefik.http.routers.draw.rule=PathPrefix(`/api/draw/`)"
+      - "traefik.http.routers.draw.entrypoints=http"
+      - "traefik.http.routers.draw.middlewares=draw-stripprefix"
+      - "traefik.http.services.draw.loadbalancer.server.port=80"
+
+  valkey:
+    image: valkey/valkey:8
+    <<: *restart
+    # AOF persistence, so buffered notes survive a valkey restart
+    # (only relevant for DATABASE_REQUEST_OPTIMIZATION 'hard').
+    command: valkey-server --appendonly yes
+    volumes:
+      - valkey:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:14.5
+    <<: *restart
+    environment:
+      POSTGRES_PASSWORD: db
+      POSTGRES_USER: db
+      POSTGRES_DB: db
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  db:
+  valkey:

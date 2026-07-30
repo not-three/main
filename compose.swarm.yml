@@ -1,3 +1,8 @@
+# Advanced !3 deployment for a docker swarm cluster:
+# horizontally scaled api/ui/draw instances, traefik as reverse proxy,
+# postgres as database and valkey as shared cache between all instances.
+# Deploy with: docker stack deploy -c compose.swarm.yml not3
+
 x-restart: &restart
   condition: any
 
@@ -13,21 +18,25 @@ x-env: &env
   DATABASE_USERNAME: db
   DATABASE_PASSWORD: db
   DATABASE_NAME: db
+  VALKEY_ENABLED: true
+  VALKEY_HOST: valkey
+  # For serverless databases (e.g. neon.tech) additionally set:
+  # DATABASE_REQUEST_OPTIMIZATION: light # or 'hard', see the README
 
 x-ui: &ui
   environment:
     API_URL: http://<domain>/api
-    DRAW_URL: http://<domain/api/draw/
+    DRAW_URL: http://<domain>/api/draw/
     TERMS_OF_SERVICE_URL: https://example.com
 
 ###
 
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:v3
     command:
       - --api.insecure=true
-      - --providers.docker=true
+      - --providers.swarm=true
       - --entrypoints.http.address=:80
     ports:
       - "80:80"
@@ -40,6 +49,7 @@ services:
         constraints:
           - node.role == manager
 
+  # The parent instance runs the schedulers (cleanup, flush) exactly once.
   api_parent:
     image: ghcr.io/not-three/api:latest
     environment: *env
@@ -65,6 +75,7 @@ services:
         - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
         - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
         - "traefik.http.routers.api.entrypoints=http"
+        - "traefik.http.routers.api.middlewares=api-stripprefix"
         - "traefik.http.services.api.loadbalancer.server.port=4000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/info"]
@@ -96,11 +107,34 @@ services:
       replicas: *draw-instances
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.draw.rule=PathPrefix(`/`)"
+        - "traefik.http.middlewares.draw-stripprefix.stripprefix.prefixes=/api/draw/"
+        - "traefik.http.routers.draw.rule=PathPrefix(`/api/draw/`)"
         - "traefik.http.routers.draw.entrypoints=http"
+        - "traefik.http.routers.draw.middlewares=draw-stripprefix"
         - "traefik.http.services.draw.loadbalancer.server.port=80"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  valkey:
+    image: valkey/valkey:8
+    # AOF persistence, so buffered notes survive a valkey restart
+    # (only relevant for DATABASE_REQUEST_OPTIMIZATION 'hard').
+    command: valkey-server --appendonly yes
+    volumes:
+      - valkey:/data
+    deploy:
+      restart_policy: *restart
+      placement:
+        constraints:
+          - node.role == manager
+          # Stateful services should be pinned to a specific server, so they
+          # always start on the node that holds their volume, e.g.:
+          # - node.hostname == server-01
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -118,6 +152,9 @@ services:
       placement:
         constraints:
           - node.role == manager
+          # Stateful services should be pinned to a specific server, so they
+          # always start on the node that holds their volume, e.g.:
+          # - node.hostname == server-01
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "db"]
       interval: 30s
@@ -126,3 +163,4 @@ services:
 
 volumes:
   db:
+  valkey:

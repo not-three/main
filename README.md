@@ -258,14 +258,71 @@ volumes:
   db:
 ```
 
+### Valkey & request optimization
+
+The api optionally integrates with [valkey](https://valkey.io) (or any
+redis-compatible server). Set `VALKEY_ENABLED=true` to store the internal
+cache in valkey instead of memory, so it is shared between all instances
+and survives restarts. Recommended as soon as you run more than one api
+instance (the advanced examples below do this).
+
+Additionally, `DATABASE_REQUEST_OPTIMIZATION` can reduce database traffic so
+serverless databases (e.g. [neon.tech](https://neon.tech)) can go to sleep
+while the instance is idle:
+
+- `none` (default): no optimization. Short cache lifetimes (~30 seconds) and
+  cleanup schedulers running every minute keep the database in constant use.
+- `light`: longer cache lifetimes, cleanup schedulers run every 15 minutes
+  instead of every minute.
+- `hard` (requires valkey): additionally keeps rate limit tracking in valkey
+  and buffers new notes in valkey, writing them to the database in batches
+  (see `VALKEY_FLUSH_INTERVAL_SECONDS` / `VALKEY_FLUSH_MAX_QUEUE_SIZE`).
+  Enable valkey persistence (AOF) so buffered notes survive a valkey restart.
+
+```yml
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  api:
+    image: ghcr.io/not-three/api:latest
+    <<: *restart
+    depends_on:
+      - valkey
+    ports:
+      - 4000:4000
+    environment:
+      CORS_ENABLED: true
+      DATABASE_MODE: pg
+      DATABASE_HOST: your-serverless-postgres.example.com
+      DATABASE_USERNAME: db
+      DATABASE_PASSWORD: db
+      DATABASE_NAME: db
+      DATABASE_REQUEST_OPTIMIZATION: hard
+      VALKEY_ENABLED: true
+      VALKEY_HOST: valkey
+
+  valkey:
+    image: valkey/valkey:8
+    <<: *restart
+    command: valkey-server --appendonly yes
+    volumes:
+      - valkey:/data
+
+volumes:
+  valkey:
+```
+
 ### Advanced
 
 See one of the following files for a more detailed example:
 
-- [docker-compose.yml](./docker-compose.yml)
-- [docker-compose.swarm.yml](./docker-compose.swarm.yml)
+- [compose.yml](./compose.yml) — single docker host, scaled via compose
+  `deploy.replicas` (no swarm needed)
+- [compose.swarm.yml](./compose.swarm.yml) — docker swarm cluster
 
-These include horizontal scaling, health checks and traefik as a reverse proxy.
+These include horizontal scaling, health checks, valkey as a shared cache
+and traefik as a reverse proxy.
 
 ### Environment variables
 
