@@ -12,14 +12,15 @@ x-instances:
   draw: &draw-instances 2
 
 x-env: &env
-  BEHIND_PROXY: true
+  BEHIND_PROXY: "true"
   DATABASE_MODE: pg
   DATABASE_HOST: db
   DATABASE_USERNAME: db
   DATABASE_PASSWORD: db
   DATABASE_NAME: db
-  VALKEY_ENABLED: true
+  VALKEY_ENABLED: "true"
   VALKEY_HOST: valkey
+  P2P_ENABLED: ${P2P_ENABLED:-false}
   # For serverless databases (e.g. neon.tech) additionally set:
   # DATABASE_REQUEST_OPTIMIZATION: light # or 'hard', see the README
 
@@ -66,7 +67,7 @@ services:
     image: ghcr.io/not-three/api:latest
     environment:
       <<: *env
-      CHILD_INSTANCE: true
+      CHILD_INSTANCE: "true"
     deploy:
       restart_policy: *restart
       replicas: *api-instances
