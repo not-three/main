@@ -23,6 +23,7 @@ x-api-parent: &api-parent
     DATABASE_NAME: db
     VALKEY_ENABLED: true
     VALKEY_HOST: valkey
+    P2P_ENABLED: ${P2P_ENABLED:-false}
     # For serverless databases (e.g. neon.tech) additionally set:
     # DATABASE_REQUEST_OPTIMIZATION: light # or 'hard', see the README
   healthcheck:

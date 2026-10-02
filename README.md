@@ -324,6 +324,13 @@ See one of the following files for a more detailed example:
 These include horizontal scaling, health checks, valkey as a shared cache
 and traefik as a reverse proxy.
 
+P2P signaling is disabled by default. To enable its WebSocket endpoint in
+either advanced example, set `P2P_ENABLED=true` when running `docker compose`
+or `docker stack deploy` (using an API image that includes P2P support). The
+public endpoint is `/api/p2p`; Traefik strips `/api` before forwarding it to
+the API. Other `P2P_*` settings can be added to the shared API environment
+block in the compose file.
+
 ### Environment variables
 
 For a full list, with detailed descriptions of all environment variables, see the [configuration documentation](https://docs.not-th.re).
