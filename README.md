@@ -17,8 +17,9 @@ and usage of the monaco editor.
 - Dark mode
 - File transfers
 - Connect your private instance with the public UI
-- **_New_**: **Excalidraw integration**
-- **_Planned_**: **Peer 2 Peer sessions**
+- Excalidraw integration
+- **_New_**: Browser local tools for conversion, encryption and formatting code, text and pictures
+- **_New_**: **Peer 2 Peer sessions**
 - **_Planned_**: **Note Bundles**
 - **_Planned_**: **HTML Previewer**
 - **_Planned_**: **JavaScript Console**
@@ -147,7 +148,7 @@ volumes:
 ```
 
 After you have deployed the API, visit the [public UI](https://not-th.re)
-go to `Tools` -> `Edit Settings` and update these values:
+go to `About` -> `Edit Settings` and update these values:
 
 ```json
 {
