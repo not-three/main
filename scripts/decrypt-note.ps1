@@ -1,5 +1,10 @@
 param($Source, $Seed)
 
+if ($Source -eq '--help' -or $args -contains '--help') {
+    [Console]::Out.WriteLine('Usage: decrypt-note.ps1 <url/file> <seed>')
+    return
+}
+
 $ErrorActionPreference = 'Stop'
 
 try {

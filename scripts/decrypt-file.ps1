@@ -1,5 +1,10 @@
 param($Source, $Seed, $Output)
 
+if ($Source -eq '--help' -or $args -contains '--help') {
+    [Console]::Out.WriteLine('Usage: decrypt-file.ps1 <url/file> <seed> <output>')
+    return
+}
+
 $ErrorActionPreference = 'Stop'
 $download = $null
 $staging = $null
