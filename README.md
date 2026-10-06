@@ -110,6 +110,41 @@ Uploading [====================] 1/1
   cURL  curl https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/decrypt-file.sh | bash -s https://api.not-th.re/file/YPOehQtnhnrku-8iEt-LO ccqORVQCQJSjsDD1BO4IOvJtLJgSId2jodMiKFr2jks= src.zip
 ```
 
+### Without the CLI
+
+The Bash creation scripts need Bash, curl, openssl, base64, xxd, and sha256sum;
+file uploads also use dd and stat. Windows decryption needs PowerShell.
+Run `create-note.sh --help` or `upload-file.sh --help` for Bash options, and
+`decrypt-note.ps1 --help` or `decrypt-file.ps1 --help` for PowerShell usage.
+The PowerShell scripts take the raw API URL and seed shown in the creation
+script's cURL line; file decryption also takes an output path.
+
+```bash
+# Create a note from a file without saving the script locally.
+curl -fsSL https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/create-note.sh | bash -s -- notes.txt
+
+# Download the script, then pipe a service log into it.
+curl -fsSLo create-note.sh https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/create-note.sh
+journalctl -u app | bash create-note.sh
+
+# Encrypt and upload a file.
+curl -fsSL https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/upload-file.sh | bash -s -- report.pdf
+
+# Upload a file to a private instance.
+curl -fsSL https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/upload-file.sh | bash -s -- --server https://api.example.com --password 'your-password' video.mp4
+```
+
+In PowerShell, replace the example URLs and seeds with those printed by the
+creation scripts:
+
+```powershell
+# Decrypt a note and write its text to the console.
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/decrypt-note.ps1'))) 'https://api.not-th.re/note/NOTE_ID/raw' 'BASE64_SEED'
+
+# Decrypt a file to a local path.
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/decrypt-file.ps1'))) 'https://api.not-th.re/file/FILE_ID' 'BASE64_SEED' 'report.pdf'
+```
+
 ## Deployment
 
 The simplest way to use !3 is to visit our hosted instance at [https://not-th.re](https://not-th.re).
