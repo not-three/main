@@ -78,6 +78,38 @@ not3 config set server https://my.api # global defaults (~/.config/not3/config.j
 not3 config set password hunter2      # bound to the server above, never sent elsewhere
 ```
 
+```text
+$ not3 u --dir src/
+Zipping src/...
+Uploading [====================] 1/1
+
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+█ ▄▄▄▄▄ █▄▀▀▀██▀█  █▄█▄ ▀██▄█ █ ▄▄▄▄▄ █
+█ █   █ █ ▀ █▄  █ ▀▀▀██▀██ ▄▄▄█ █   █ █
+█ █▄▄▄█ █▄██▄▄  ▄▄▄▄ ▀▄█▄▄  ▄ █ █▄▄▄█ █
+█▄▄▄▄▄▄▄█▄█ █▄█▄█▄▀▄█ █▄█ █▄▀▄█▄▄▄▄▄▄▄█
+█▄  ▄▀▀▄█▄▀▄▄█▀▀▀▀█▄▄ █▀██▀▀█▀▄█▀▄  ▀▄█
+█ ▄▄██▄▄   ▀ █▀ ▀▄█▀▀▄▄▀ ▄▀▄▀██▀▄▀█  ▀█
+█  ▀▄▀▄▄   █▄▀  ▄ ▀▀ ▄▄ ██  ▀▀▀ █   █ █
+█▀▄▄▄  ▄ ▄ ▄███▀███▄▄▄ ▄█ ▄▀▀▄ ▄▀█ █▄▀█
+█▄▄ █▀▀▄█▄▀▀  ▀▀█▄▀▀▀▀█▄█ ▀█ █▀███▀▄ ▀█
+█ ▄ ▀ ▀▄█▄  ▀▀█ ▄▀▀ █▄▄▀█▄█▄ ▀███ ▀▄ ▄█
+█▀  ▀█▀▄▄█   █▄ ▀▀▄█▄▀   ██ ▄  ▀▀▄█▀ ██
+█  █ ▄▀▄█ ▄▀▄▄ ▀█████▄██▄▄▀███▄██▀▀ ███
+██▀▄ ▄▄▄█▀▄▄█    ▀▀▀█▄▄▄██ ▀   ▄█   ▄ █
+█▀▄▀▄▄▄▄ ▀▀▄█ ▄▄▀▀▄█ █ █▀▀▄ ▀█ ▄▄▀▄█▄▀█
+███▄█▄▄▄▄ ▄ ▀ ██ █▀▄▄▀▀ ▀ ██▀ ▄▄▄   ▄ █
+█ ▄▄▄▄▄ ██▄ ▀██  ▄ ██▀█▀▀██   █▄█ ▄█  █
+█ █   █ █▀ █▄█▄ ▀▀█▄  ▀▀▀█ ▄▀▄  ▄ █▀█▄█
+█ █▄▄▄█ █  ▄ ▀ ▄█▄███▄█▄ ▄ ▀█▄ ▄ ▄ ▀███
+█▄▄▄▄▄▄▄█▄█▄▄▄▄▄█████▄███▄▄███▄▄▄██▄▄▄█
+
+  ID    YPOehQtnhnrku-8iEt-LO
+  Seed  ccqORVQCQJSjsDD1BO4IOvJtLJgSId2jodMiKFr2jks=
+  URL   https://not-th.re/f/YPOehQtnhnrku-8iEt-LO#az1jY3FPUlZRQ1FKU2pzREQxQk80SU92SnRMSmdTSWQyam9kTWlLRnIyamtzJTNE
+  cURL  curl https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/decrypt-file.sh | bash -s https://api.not-th.re/file/YPOehQtnhnrku-8iEt-LO ccqORVQCQJSjsDD1BO4IOvJtLJgSId2jodMiKFr2jks= src.zip
+```
+
 ### Without the CLI
 
 The Bash creation scripts need Bash, curl, openssl, base64, xxd, and sha256sum;
@@ -111,38 +143,6 @@ creation scripts:
 
 # Decrypt a file to a local path.
 & ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/decrypt-file.ps1'))) 'https://api.not-th.re/file/FILE_ID' 'BASE64_SEED' 'report.pdf'
-```
-
-```text
-$ not3 u --dir src/
-Zipping src/...
-Uploading [====================] 1/1
-
-▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-█ ▄▄▄▄▄ █▄▀▀▀██▀█  █▄█▄ ▀██▄█ █ ▄▄▄▄▄ █
-█ █   █ █ ▀ █▄  █ ▀▀▀██▀██ ▄▄▄█ █   █ █
-█ █▄▄▄█ █▄██▄▄  ▄▄▄▄ ▀▄█▄▄  ▄ █ █▄▄▄█ █
-█▄▄▄▄▄▄▄█▄█ █▄█▄█▄▀▄█ █▄█ █▄▀▄█▄▄▄▄▄▄▄█
-█▄  ▄▀▀▄█▄▀▄▄█▀▀▀▀█▄▄ █▀██▀▀█▀▄█▀▄  ▀▄█
-█ ▄▄██▄▄   ▀ █▀ ▀▄█▀▀▄▄▀ ▄▀▄▀██▀▄▀█  ▀█
-█  ▀▄▀▄▄   █▄▀  ▄ ▀▀ ▄▄ ██  ▀▀▀ █   █ █
-█▀▄▄▄  ▄ ▄ ▄███▀███▄▄▄ ▄█ ▄▀▀▄ ▄▀█ █▄▀█
-█▄▄ █▀▀▄█▄▀▀  ▀▀█▄▀▀▀▀█▄█ ▀█ █▀███▀▄ ▀█
-█ ▄ ▀ ▀▄█▄  ▀▀█ ▄▀▀ █▄▄▀█▄█▄ ▀███ ▀▄ ▄█
-█▀  ▀█▀▄▄█   █▄ ▀▀▄█▄▀   ██ ▄  ▀▀▄█▀ ██
-█  █ ▄▀▄█ ▄▀▄▄ ▀█████▄██▄▄▀███▄██▀▀ ███
-██▀▄ ▄▄▄█▀▄▄█    ▀▀▀█▄▄▄██ ▀   ▄█   ▄ █
-█▀▄▀▄▄▄▄ ▀▀▄█ ▄▄▀▀▄█ █ █▀▀▄ ▀█ ▄▄▀▄█▄▀█
-███▄█▄▄▄▄ ▄ ▀ ██ █▀▄▄▀▀ ▀ ██▀ ▄▄▄   ▄ █
-█ ▄▄▄▄▄ ██▄ ▀██  ▄ ██▀█▀▀██   █▄█ ▄█  █
-█ █   █ █▀ █▄█▄ ▀▀█▄  ▀▀▀█ ▄▀▄  ▄ █▀█▄█
-█ █▄▄▄█ █  ▄ ▀ ▄█▄███▄█▄ ▄ ▀█▄ ▄ ▄ ▀███
-█▄▄▄▄▄▄▄█▄█▄▄▄▄▄█████▄███▄▄███▄▄▄██▄▄▄█
-
-  ID    YPOehQtnhnrku-8iEt-LO
-  Seed  ccqORVQCQJSjsDD1BO4IOvJtLJgSId2jodMiKFr2jks=
-  URL   https://not-th.re/f/YPOehQtnhnrku-8iEt-LO#az1jY3FPUlZRQ1FKU2pzREQxQk80SU92SnRMSmdTSWQyam9kTWlLRnIyamtzJTNE
-  cURL  curl https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/decrypt-file.sh | bash -s https://api.not-th.re/file/YPOehQtnhnrku-8iEt-LO ccqORVQCQJSjsDD1BO4IOvJtLJgSId2jodMiKFr2jks= src.zip
 ```
 
 ## Deployment
