@@ -161,3 +161,12 @@ test('missing positional args print usage', async () => {
     assert.match(result.stderr, /usage/i);
   }
 });
+
+test('PowerShell help prints usage and exits successfully', async () => {
+  for (const file of ['decrypt-note.ps1', 'decrypt-file.ps1']) {
+    const result = await run(file, ['--help']);
+    assert.equal(result.code, 0, result.stderr);
+    assert.match(result.stdout.toString(), /usage/i);
+    assert.equal(result.stderr, '');
+  }
+});

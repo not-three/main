@@ -159,7 +159,7 @@ urlencode() {
   for ((i=0; i<${#value}; i++)); do
     char=${value:i:1}
     case $char in
-      [a-zA-Z0-9._~-]) result+=$char ;;
+      [a-zA-Z0-9*._-]) result+=$char ;;
       ' ') result+='+' ;;
       *) printf -v hex '%02X' "'$char"
          result+="%$hex" ;;

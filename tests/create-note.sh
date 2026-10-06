@@ -99,6 +99,14 @@ test_env_precedence() {
   [[ $(<"$CAPTURE_HEADERS") == *'Authorization: Bearer right'* ]] || fail 'CLI password did not override environment'
 }
 
+test_server_fragment_urlsearchparams_encoding() {
+  printf 'note' > "$work/note"
+  local url decoded
+  url=$("$root/scripts/create-note.sh" --server 'https://example.test/~*' --quiet "$work/note")
+  decoded=$(printf '%s' "${url#*#}" | base64 -d)
+  [[ $decoded == *'&s=https%3A%2F%2Fexample.test%2F%7E*%2F' ]] || fail "server encoding wrong: $decoded"
+}
+
 test_roundtrip() {
   printf 'Grüße ☃\n' > "$work/note"
   printf '\200\377\201\n' >> "$work/note"
@@ -166,6 +174,6 @@ test_missing_dependency() {
 }
 
 case ${1:-all} in
-  all) for name in help empty seed roundtrip stdin_options output_and_seed_url env_precedence api_error bad_response transport_error missing_dependency; do run "$name"; done ;;
+  all) for name in help empty seed roundtrip stdin_options output_and_seed_url env_precedence server_fragment_urlsearchparams_encoding api_error bad_response transport_error missing_dependency; do run "$name"; done ;;
   *) run "$1" ;;
 esac
