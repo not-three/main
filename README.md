@@ -18,7 +18,7 @@ and usage of the monaco editor.
 - File transfers
 - Connect your private instance with the public UI
 - Excalidraw integration
-- **_New_**: Browser local tools for conversion, encryption and formatting code, text and pictures
+- **_New_**: **Browser local tools for conversion, encryption and formatting code, text and pictures**
 - **_New_**: **Peer 2 Peer sessions**
 - **_Planned_**: **Note Bundles**
 - **_Planned_**: **HTML Previewer**
