@@ -20,9 +20,8 @@ and usage of the monaco editor.
 - Excalidraw integration
 - **_New_**: **Browser local tools for conversion, encryption and formatting code, text and pictures**
 - **_New_**: **Peer 2 Peer sessions**
+- **_New_**: **HTML, JavaScript, Markdown, PHP, (and more) Previewer**
 - **_Planned_**: **Note Bundles**
-- **_Planned_**: **HTML Previewer**
-- **_Planned_**: **JavaScript Console**
 - No cookies
 - No tracking
 - No ads
