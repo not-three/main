@@ -82,9 +82,10 @@ not3 config set password hunter2      # bound to the server above, never sent el
 
 The Bash creation scripts need Bash, curl, openssl, base64, xxd, and sha256sum;
 file uploads also use dd and stat. Windows decryption needs PowerShell.
-Run either Bash script with `--help` for its options. The PowerShell scripts
-take the raw API URL and seed shown in the creation script's cURL line; file
-decryption also takes an output path.
+Run `create-note.sh --help` or `upload-file.sh --help` for Bash options, and
+`decrypt-note.ps1 --help` or `decrypt-file.ps1 --help` for PowerShell usage.
+The PowerShell scripts take the raw API URL and seed shown in the creation
+script's cURL line; file decryption also takes an output path.
 
 ```bash
 # Create a note from a file without saving the script locally.
