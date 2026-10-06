@@ -97,8 +97,8 @@ journalctl -u app | bash create-note.sh
 # Encrypt and upload a file.
 curl -fsSL https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/upload-file.sh | bash -s -- report.pdf
 
-# Create a note from a file on a private instance.
-curl -fsSL https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/create-note.sh | bash -s -- --server https://api.example.com --password 'your-password' private.txt
+# Upload a file to a private instance.
+curl -fsSL https://raw.githubusercontent.com/not-three/main/refs/heads/main/scripts/upload-file.sh | bash -s -- --server https://api.example.com --password 'your-password' video.mp4
 ```
 
 In PowerShell, replace the example URLs and seeds with those printed by the
