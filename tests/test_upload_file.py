@@ -104,11 +104,14 @@ class UploadFileTest(unittest.TestCase):
         self.assertEqual(help_result.returncode, 0, help_result.stderr)
         self.assertIn("--name", help_result.stdout)
         file = self.make_file(1)
-        for seed in ("invalid!", base64.b64encode(b"short").decode()):
+        for seed in ("", "invalid!", base64.b64encode(b"short").decode()):
             with self.subTest(seed=seed):
                 result = self.run_upload("--seed", seed, file)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("seed", result.stderr.lower())
+        result = self.run_upload(file, env=dict(os.environ, NOT3_SEED=""))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("seed", result.stderr.lower())
         self.assertEqual(self.server.requests, [])
 
     def test_missing_curl_is_reported_before_create(self):

@@ -28,6 +28,8 @@ server=${NOT3_SERVER:-https://api.not-th.re}
 ui=${NOT3_UI:-https://not-th.re/}
 password=${NOT3_PASSWORD-}
 seed=${NOT3_SEED-}
+seed_supplied=false
+if [[ ${NOT3_SEED+x} ]]; then seed_supplied=true; fi
 name=''
 quiet=false
 file=''
@@ -41,7 +43,7 @@ while (($#)); do
         --server) server=$2 ;;
         --ui) ui=$2 ;;
         --password) password=$2 ;;
-        --seed) seed=$2 ;;
+        --seed) seed=$2; seed_supplied=true ;;
         --name) name=$2 ;;
       esac
       shift 2
@@ -82,7 +84,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [[ -n $seed ]]; then
+if $seed_supplied; then
   [[ $seed =~ ^[A-Za-z0-9+/]{43}=$ ]] || die 'Invalid seed: expected padded base64 for 32 bytes'
   printf '%s' "$seed" | base64 --decode > "$tmp_dir/seed" 2>/dev/null || die 'Invalid seed base64'
   [[ $(stat -c %s -- "$tmp_dir/seed") == 32 ]] || die 'Invalid seed: expected 32 bytes'
